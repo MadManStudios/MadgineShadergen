@@ -1,0 +1,1267 @@
+Determining if the include file dirent.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_876d3 && [1/2] Building C object CMakeFiles\cmTC_876d3.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_876d3.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_876d3.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_876d3.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "dirent.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file dlfcn.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_6b442 && [1/2] Building C object CMakeFiles\cmTC_6b442.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_6b442.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_6b442.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_6b442.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "dlfcn.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file execinfo.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_1c03a && [1/2] Building C object CMakeFiles\cmTC_1c03a.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_1c03a.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_1c03a.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_1c03a.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "execinfo.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file link.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_de770 && [1/2] Building C object CMakeFiles\cmTC_de770.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_de770.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_de770.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_de770.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "link.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file malloc/malloc.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_4af2d && [1/2] Building C object CMakeFiles\cmTC_4af2d.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_4af2d.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_4af2d.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_4af2d.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "malloc/malloc.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file ndir.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_6b047 && [1/2] Building C object CMakeFiles\cmTC_6b047.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_6b047.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_6b047.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_6b047.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "ndir.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file sys/dir.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_0d50f && [1/2] Building C object CMakeFiles\cmTC_0d50f.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_0d50f.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_0d50f.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_0d50f.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/dir.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file sys/ioctl.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_4972e && [1/2] Building C object CMakeFiles\cmTC_4972e.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_4972e.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_4972e.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_4972e.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/ioctl.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file sys/mman.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_228ce && [1/2] Building C object CMakeFiles\cmTC_228ce.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_228ce.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_228ce.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_228ce.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/mman.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file sys/ndir.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_239cf && [1/2] Building C object CMakeFiles\cmTC_239cf.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_239cf.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_239cf.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_239cf.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/ndir.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file sys/param.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_a6586 && [1/2] Building C object CMakeFiles\cmTC_a6586.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_a6586.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_a6586.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_a6586.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/param.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file sys/resource.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_4f834 && [1/2] Building C object CMakeFiles\cmTC_4f834.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_4f834.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_4f834.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_4f834.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/resource.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file sys/time.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_ce6c6 && [1/2] Building C object CMakeFiles\cmTC_ce6c6.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_ce6c6.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_ce6c6.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_ce6c6.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/time.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file sys/uio.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_4ad65 && [1/2] Building C object CMakeFiles\cmTC_4ad65.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_4ad65.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_4ad65.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_4ad65.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/uio.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file sys/wait.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_0b974 && [1/2] Building C object CMakeFiles\cmTC_0b974.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_0b974.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_0b974.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_0b974.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/wait.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file termios.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_32777 && [1/2] Building C object CMakeFiles\cmTC_32777.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_32777.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_32777.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_32777.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "termios.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file unistd.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_fec92 && [1/2] Building C object CMakeFiles\cmTC_fec92.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_fec92.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_fec92.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_fec92.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "unistd.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file utime.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_80074 && [1/2] Building C object CMakeFiles\cmTC_80074.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_80074.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_80074.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_80074.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "utime.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file valgrind/valgrind.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_868a8 && [1/2] Building C object CMakeFiles\cmTC_868a8.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_868a8.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_868a8.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_868a8.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "valgrind/valgrind.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file zlib.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_d5879 && [1/2] Building C object CMakeFiles\cmTC_d5879.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_d5879.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_d5879.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_d5879.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "zlib.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file mach/mach.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_c40f3 && [1/2] Building C object CMakeFiles\cmTC_c40f3.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_c40f3.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_c40f3.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_c40f3.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "mach/mach.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file mach-o/dyld.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_86c4b && [1/2] Building C object CMakeFiles\cmTC_86c4b.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_86c4b.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_86c4b.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_86c4b.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "mach-o/dyld.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the include file histedit.h exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_11980 && [1/2] Building C object CMakeFiles\cmTC_11980.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_11980.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_11980.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_11980.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "histedit.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Performing C++ SOURCE FILE Test HAVE_CXXABI_H failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_01955 && [1/2] Building CXX object CMakeFiles\cmTC_01955.dir\src.cxx.obj
+FAILED: CMakeFiles/cmTC_01955.dir/src.cxx.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo /TP -DHAVE_CXXABI_H  /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_01955.dir\src.cxx.obj /FdCMakeFiles\cmTC_01955.dir\ /FS -c src.cxx
+src.cxx(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "cxxabi.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+
+#include <stddef.h>
+#include <cxxabi.h>
+int main() { return 0; }
+
+Determining if the arc4random exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_b053c && [1/2] Building C object CMakeFiles\cmTC_b053c.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_b053c.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_b053c.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_b053c.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(8): error C2065: "arc4random": nichtdeklarierter Bezeichner
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdlib.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef arc4random
+  return ((int*)(&arc4random))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the backtrace exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_53a62 && [1/2] Building C object CMakeFiles\cmTC_53a62.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_53a62.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_53a62.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_53a62.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "execinfo.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <execinfo.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef backtrace
+  return ((int*)(&backtrace))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the getpagesize exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_56466 && [1/2] Building C object CMakeFiles\cmTC_56466.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_56466.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_56466.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_56466.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "unistd.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <unistd.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef getpagesize
+  return ((int*)(&getpagesize))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the getrusage exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_4c1d5 && [1/2] Building C object CMakeFiles\cmTC_4c1d5.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_4c1d5.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_4c1d5.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_4c1d5.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/resource.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/resource.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef getrusage
+  return ((int*)(&getrusage))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the setrlimit exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_6bd4c && [1/2] Building C object CMakeFiles\cmTC_6bd4c.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_6bd4c.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_6bd4c.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_6bd4c.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/resource.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/resource.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef setrlimit
+  return ((int*)(&setrlimit))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the isatty exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_e0c7d && [1/2] Building C object CMakeFiles\cmTC_e0c7d.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_e0c7d.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_e0c7d.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_e0c7d.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "unistd.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <unistd.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef isatty
+  return ((int*)(&isatty))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the futimens exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_6660a && [1/2] Building C object CMakeFiles\cmTC_6660a.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_6660a.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_6660a.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_6660a.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(8): error C2065: "futimens": nichtdeklarierter Bezeichner
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/stat.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef futimens
+  return ((int*)(&futimens))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the futimes exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_22497 && [1/2] Building C object CMakeFiles\cmTC_22497.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_22497.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_22497.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_22497.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/time.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/time.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef futimes
+  return ((int*)(&futimes))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the mallctl exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_48713 && [1/2] Building C object CMakeFiles\cmTC_48713.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_48713.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_48713.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_48713.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "malloc_np.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <malloc_np.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef mallctl
+  return ((int*)(&mallctl))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the mallinfo exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_4893d && [1/2] Building C object CMakeFiles\cmTC_4893d.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_4893d.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_4893d.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_4893d.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(8): error C2065: "mallinfo": nichtdeklarierter Bezeichner
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <malloc.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef mallinfo
+  return ((int*)(&mallinfo))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the mallinfo2 exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_ad26d && [1/2] Building C object CMakeFiles\cmTC_ad26d.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_ad26d.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_ad26d.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_ad26d.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(8): error C2065: "mallinfo2": nichtdeklarierter Bezeichner
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <malloc.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef mallinfo2
+  return ((int*)(&mallinfo2))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the malloc_zone_statistics exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_74752 && [1/2] Building C object CMakeFiles\cmTC_74752.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_74752.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_74752.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_74752.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "malloc/malloc.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <malloc/malloc.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef malloc_zone_statistics
+  return ((int*)(&malloc_zone_statistics))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the mkdtemp exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_6a51c && [1/2] Building C object CMakeFiles\cmTC_6a51c.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_6a51c.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_6a51c.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_6a51c.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "unistd.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdlib.h>
+#include <unistd.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef mkdtemp
+  return ((int*)(&mkdtemp))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the mkstemp exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_a05e9 && [1/2] Building C object CMakeFiles\cmTC_a05e9.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_a05e9.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_a05e9.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_a05e9.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "unistd.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdlib.h>
+#include <unistd.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef mkstemp
+  return ((int*)(&mkstemp))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the mktemp exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_2619a && [1/2] Building C object CMakeFiles\cmTC_2619a.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_2619a.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_2619a.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_2619a.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "unistd.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdlib.h>
+#include <unistd.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef mktemp
+  return ((int*)(&mktemp))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the closedir exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_40b01 && [1/2] Building C object CMakeFiles\cmTC_40b01.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_40b01.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_40b01.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_40b01.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "dirent.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/types.h>
+#include <dirent.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef closedir
+  return ((int*)(&closedir))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the opendir exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_d94bd && [1/2] Building C object CMakeFiles\cmTC_d94bd.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_d94bd.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_d94bd.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_d94bd.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "dirent.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/types.h>
+#include <dirent.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef opendir
+  return ((int*)(&opendir))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the readdir exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_e766f && [1/2] Building C object CMakeFiles\cmTC_e766f.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_e766f.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_e766f.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_e766f.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "dirent.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/types.h>
+#include <dirent.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef readdir
+  return ((int*)(&readdir))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the getcwd exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_1c008 && [1/2] Building C object CMakeFiles\cmTC_1c008.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_1c008.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_1c008.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_1c008.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "unistd.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <unistd.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef getcwd
+  return ((int*)(&getcwd))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the gettimeofday exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_544e3 && [1/2] Building C object CMakeFiles\cmTC_544e3.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_544e3.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_544e3.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_544e3.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/time.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/time.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef gettimeofday
+  return ((int*)(&gettimeofday))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the getrlimit exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_dced6 && [1/2] Building C object CMakeFiles\cmTC_dced6.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_dced6.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_dced6.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_dced6.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(3): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "sys/time.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/resource.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef getrlimit
+  return ((int*)(&getrlimit))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the posix_spawn exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_e57c9 && [1/2] Building C object CMakeFiles\cmTC_e57c9.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_e57c9.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_e57c9.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_e57c9.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "spawn.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <spawn.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef posix_spawn
+  return ((int*)(&posix_spawn))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the pread exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_d1d04 && [1/2] Building C object CMakeFiles\cmTC_d1d04.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_d1d04.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_d1d04.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_d1d04.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "unistd.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <unistd.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pread
+  return ((int*)(&pread))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the realpath exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_7db45 && [1/2] Building C object CMakeFiles\cmTC_7db45.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_7db45.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_7db45.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_7db45.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(8): error C2065: "realpath": nichtdeklarierter Bezeichner
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdlib.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef realpath
+  return ((int*)(&realpath))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the sbrk exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_1fb3a && [1/2] Building C object CMakeFiles\cmTC_1fb3a.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_1fb3a.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_1fb3a.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_1fb3a.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(2): fatal error C1083: Datei (Include) kann nicht geöffnet werden: "unistd.h": No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <unistd.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef sbrk
+  return ((int*)(&sbrk))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the srand48 exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_886a7 && [1/2] Building C object CMakeFiles\cmTC_886a7.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_886a7.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_886a7.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_886a7.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(8): error C2065: "srand48": nichtdeklarierter Bezeichner
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdlib.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef srand48
+  return ((int*)(&srand48))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the strtoq exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_e1f40 && [1/2] Building C object CMakeFiles\cmTC_e1f40.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_e1f40.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_e1f40.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_e1f40.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(8): error C2065: "strtoq": nichtdeklarierter Bezeichner
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdlib.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef strtoq
+  return ((int*)(&strtoq))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the strerror_r exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_69602 && [1/2] Building C object CMakeFiles\cmTC_69602.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_69602.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_69602.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_69602.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(8): error C2065: "strerror_r": nichtdeklarierter Bezeichner
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <string.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef strerror_r
+  return ((int*)(&strerror_r))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the setenv exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_d0b75 && [1/2] Building C object CMakeFiles\cmTC_d0b75.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_d0b75.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_d0b75.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_d0b75.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(8): error C2065: "setenv": nichtdeklarierter Bezeichner
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdlib.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef setenv
+  return ((int*)(&setenv))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Determining if the function _alloca exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_51f8f && [1/2] Building C object CMakeFiles\cmTC_51f8f.dir\CheckFunctionExists.c.obj
+FAILED: CMakeFiles/cmTC_51f8f.dir/CheckFunctionExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3 -DCHECK_FUNCTION_EXISTS=_alloca /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_51f8f.dir\CheckFunctionExists.c.obj /FdCMakeFiles\cmTC_51f8f.dir\ /FS -c "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CheckFunctionExists.c"
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CheckFunctionExists.c(7): warning C4391: "char _alloca(void)": Falscher Rückgabetyp für systeminterne Funktion. Erwartet: "void"
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CheckFunctionExists.c(7): warning C4392: "char _alloca(void)": Falsche Anzahl von Argumenten für systeminterne Funktion. Erwartet: "1" Argumente
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.20\Modules\CheckFunctionExists.c(17): error C2168: "_alloca": zu wenig Parameter an systeminterne Funktion übergeben
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __alloca exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_03f63 && [1/2] Building C object CMakeFiles\cmTC_03f63.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_03f63.exe
+FAILED: cmTC_03f63.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_03f63.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_03f63.dir\CheckFunctionExists.c.obj  /out:cmTC_03f63.exe /implib:cmTC_03f63.lib /pdb:cmTC_03f63.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_03f63.dir\CheckFunctionExists.c.obj /out:cmTC_03f63.exe /implib:cmTC_03f63.lib /pdb:cmTC_03f63.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_03f63.dir/intermediate.manifest CMakeFiles\cmTC_03f63.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__alloca" in Funktion "main".
+cmTC_03f63.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __chkstk_ms exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_83a36 && [1/2] Building C object CMakeFiles\cmTC_83a36.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_83a36.exe
+FAILED: cmTC_83a36.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_83a36.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_83a36.dir\CheckFunctionExists.c.obj  /out:cmTC_83a36.exe /implib:cmTC_83a36.lib /pdb:cmTC_83a36.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_83a36.dir\CheckFunctionExists.c.obj /out:cmTC_83a36.exe /implib:cmTC_83a36.lib /pdb:cmTC_83a36.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_83a36.dir/intermediate.manifest CMakeFiles\cmTC_83a36.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__chkstk_ms" in Funktion "main".
+cmTC_83a36.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function ___chkstk exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_a3a3e && [1/2] Building C object CMakeFiles\cmTC_a3a3e.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_a3a3e.exe
+FAILED: cmTC_a3a3e.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_a3a3e.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_a3a3e.dir\CheckFunctionExists.c.obj  /out:cmTC_a3a3e.exe /implib:cmTC_a3a3e.lib /pdb:cmTC_a3a3e.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_a3a3e.dir\CheckFunctionExists.c.obj /out:cmTC_a3a3e.exe /implib:cmTC_a3a3e.lib /pdb:cmTC_a3a3e.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_a3a3e.dir/intermediate.manifest CMakeFiles\cmTC_a3a3e.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "___chkstk" in Funktion "main".
+cmTC_a3a3e.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function ___chkstk_ms exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_4acc8 && [1/2] Building C object CMakeFiles\cmTC_4acc8.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_4acc8.exe
+FAILED: cmTC_4acc8.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_4acc8.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_4acc8.dir\CheckFunctionExists.c.obj  /out:cmTC_4acc8.exe /implib:cmTC_4acc8.lib /pdb:cmTC_4acc8.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_4acc8.dir\CheckFunctionExists.c.obj /out:cmTC_4acc8.exe /implib:cmTC_4acc8.lib /pdb:cmTC_4acc8.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_4acc8.dir/intermediate.manifest CMakeFiles\cmTC_4acc8.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "___chkstk_ms" in Funktion "main".
+cmTC_4acc8.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __ashldi3 exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_61ebe && [1/2] Building C object CMakeFiles\cmTC_61ebe.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_61ebe.exe
+FAILED: cmTC_61ebe.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_61ebe.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_61ebe.dir\CheckFunctionExists.c.obj  /out:cmTC_61ebe.exe /implib:cmTC_61ebe.lib /pdb:cmTC_61ebe.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_61ebe.dir\CheckFunctionExists.c.obj /out:cmTC_61ebe.exe /implib:cmTC_61ebe.lib /pdb:cmTC_61ebe.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_61ebe.dir/intermediate.manifest CMakeFiles\cmTC_61ebe.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__ashldi3" in Funktion "main".
+cmTC_61ebe.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __ashrdi3 exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_7f15b && [1/2] Building C object CMakeFiles\cmTC_7f15b.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_7f15b.exe
+FAILED: cmTC_7f15b.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_7f15b.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_7f15b.dir\CheckFunctionExists.c.obj  /out:cmTC_7f15b.exe /implib:cmTC_7f15b.lib /pdb:cmTC_7f15b.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_7f15b.dir\CheckFunctionExists.c.obj /out:cmTC_7f15b.exe /implib:cmTC_7f15b.lib /pdb:cmTC_7f15b.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_7f15b.dir/intermediate.manifest CMakeFiles\cmTC_7f15b.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__ashrdi3" in Funktion "main".
+cmTC_7f15b.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __divdi3 exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_aad30 && [1/2] Building C object CMakeFiles\cmTC_aad30.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_aad30.exe
+FAILED: cmTC_aad30.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_aad30.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_aad30.dir\CheckFunctionExists.c.obj  /out:cmTC_aad30.exe /implib:cmTC_aad30.lib /pdb:cmTC_aad30.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_aad30.dir\CheckFunctionExists.c.obj /out:cmTC_aad30.exe /implib:cmTC_aad30.lib /pdb:cmTC_aad30.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_aad30.dir/intermediate.manifest CMakeFiles\cmTC_aad30.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__divdi3" in Funktion "main".
+cmTC_aad30.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __fixdfdi exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_b1fa4 && [1/2] Building C object CMakeFiles\cmTC_b1fa4.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_b1fa4.exe
+FAILED: cmTC_b1fa4.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_b1fa4.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_b1fa4.dir\CheckFunctionExists.c.obj  /out:cmTC_b1fa4.exe /implib:cmTC_b1fa4.lib /pdb:cmTC_b1fa4.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_b1fa4.dir\CheckFunctionExists.c.obj /out:cmTC_b1fa4.exe /implib:cmTC_b1fa4.lib /pdb:cmTC_b1fa4.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_b1fa4.dir/intermediate.manifest CMakeFiles\cmTC_b1fa4.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__fixdfdi" in Funktion "main".
+cmTC_b1fa4.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __fixsfdi exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_63453 && [1/2] Building C object CMakeFiles\cmTC_63453.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_63453.exe
+FAILED: cmTC_63453.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_63453.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_63453.dir\CheckFunctionExists.c.obj  /out:cmTC_63453.exe /implib:cmTC_63453.lib /pdb:cmTC_63453.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_63453.dir\CheckFunctionExists.c.obj /out:cmTC_63453.exe /implib:cmTC_63453.lib /pdb:cmTC_63453.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_63453.dir/intermediate.manifest CMakeFiles\cmTC_63453.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__fixsfdi" in Funktion "main".
+cmTC_63453.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __floatdidf exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_3c201 && [1/2] Building C object CMakeFiles\cmTC_3c201.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_3c201.exe
+FAILED: cmTC_3c201.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_3c201.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_3c201.dir\CheckFunctionExists.c.obj  /out:cmTC_3c201.exe /implib:cmTC_3c201.lib /pdb:cmTC_3c201.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_3c201.dir\CheckFunctionExists.c.obj /out:cmTC_3c201.exe /implib:cmTC_3c201.lib /pdb:cmTC_3c201.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_3c201.dir/intermediate.manifest CMakeFiles\cmTC_3c201.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__floatdidf" in Funktion "main".
+cmTC_3c201.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __lshrdi3 exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_2c6b1 && [1/2] Building C object CMakeFiles\cmTC_2c6b1.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_2c6b1.exe
+FAILED: cmTC_2c6b1.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_2c6b1.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_2c6b1.dir\CheckFunctionExists.c.obj  /out:cmTC_2c6b1.exe /implib:cmTC_2c6b1.lib /pdb:cmTC_2c6b1.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_2c6b1.dir\CheckFunctionExists.c.obj /out:cmTC_2c6b1.exe /implib:cmTC_2c6b1.lib /pdb:cmTC_2c6b1.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_2c6b1.dir/intermediate.manifest CMakeFiles\cmTC_2c6b1.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__lshrdi3" in Funktion "main".
+cmTC_2c6b1.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __moddi3 exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_5b51f && [1/2] Building C object CMakeFiles\cmTC_5b51f.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_5b51f.exe
+FAILED: cmTC_5b51f.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_5b51f.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_5b51f.dir\CheckFunctionExists.c.obj  /out:cmTC_5b51f.exe /implib:cmTC_5b51f.lib /pdb:cmTC_5b51f.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_5b51f.dir\CheckFunctionExists.c.obj /out:cmTC_5b51f.exe /implib:cmTC_5b51f.lib /pdb:cmTC_5b51f.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_5b51f.dir/intermediate.manifest CMakeFiles\cmTC_5b51f.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__moddi3" in Funktion "main".
+cmTC_5b51f.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __udivdi3 exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_ac475 && [1/2] Building C object CMakeFiles\cmTC_ac475.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_ac475.exe
+FAILED: cmTC_ac475.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_ac475.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_ac475.dir\CheckFunctionExists.c.obj  /out:cmTC_ac475.exe /implib:cmTC_ac475.lib /pdb:cmTC_ac475.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_ac475.dir\CheckFunctionExists.c.obj /out:cmTC_ac475.exe /implib:cmTC_ac475.lib /pdb:cmTC_ac475.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_ac475.dir/intermediate.manifest CMakeFiles\cmTC_ac475.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__udivdi3" in Funktion "main".
+cmTC_ac475.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __umoddi3 exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_95e36 && [1/2] Building C object CMakeFiles\cmTC_95e36.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_95e36.exe
+FAILED: cmTC_95e36.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_95e36.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_95e36.dir\CheckFunctionExists.c.obj  /out:cmTC_95e36.exe /implib:cmTC_95e36.lib /pdb:cmTC_95e36.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_95e36.dir\CheckFunctionExists.c.obj /out:cmTC_95e36.exe /implib:cmTC_95e36.lib /pdb:cmTC_95e36.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_95e36.dir/intermediate.manifest CMakeFiles\cmTC_95e36.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__umoddi3" in Funktion "main".
+cmTC_95e36.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __main exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_33e8c && [1/2] Building C object CMakeFiles\cmTC_33e8c.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_33e8c.exe
+FAILED: cmTC_33e8c.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_33e8c.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_33e8c.dir\CheckFunctionExists.c.obj  /out:cmTC_33e8c.exe /implib:cmTC_33e8c.lib /pdb:cmTC_33e8c.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_33e8c.dir\CheckFunctionExists.c.obj /out:cmTC_33e8c.exe /implib:cmTC_33e8c.lib /pdb:cmTC_33e8c.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_33e8c.dir/intermediate.manifest CMakeFiles\cmTC_33e8c.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__main" in Funktion "main".
+cmTC_33e8c.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function __cmpdi2 exists failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_cc8be && [1/2] Building C object CMakeFiles\cmTC_cc8be.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_cc8be.exe
+FAILED: cmTC_cc8be.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_cc8be.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100203~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_cc8be.dir\CheckFunctionExists.c.obj  /out:cmTC_cc8be.exe /implib:cmTC_cc8be.lib /pdb:cmTC_cc8be.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_cc8be.dir\CheckFunctionExists.c.obj /out:cmTC_cc8be.exe /implib:cmTC_cc8be.lib /pdb:cmTC_cc8be.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_cc8be.dir/intermediate.manifest CMakeFiles\cmTC_cc8be.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol "__cmpdi2" in Funktion "main".
+cmTC_cc8be.exe : fatal error LNK1120: 1 nicht aufgelöste Externe
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the __GLIBC__ exist failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_d9322 && [1/2] Building C object CMakeFiles\cmTC_d9322.dir\CheckSymbolExists.c.obj
+FAILED: CMakeFiles/cmTC_d9322.dir/CheckSymbolExists.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS /W3  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_d9322.dir\CheckSymbolExists.c.obj /FdCMakeFiles\cmTC_d9322.dir\ /FS -c CheckSymbolExists.c
+CheckSymbolExists.c(8): error C2065: "__GLIBC__": nichtdeklarierter Bezeichner
+ninja: build stopped: subcommand failed.
+
+
+File C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <stdio.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef __GLIBC__
+  return ((int*)(&__GLIBC__))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Performing C++ SOURCE FILE Test HAVE_U_INT64_T failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_8beca && [1/2] Building CXX object CMakeFiles\cmTC_8beca.dir\src.cxx.obj
+FAILED: CMakeFiles/cmTC_8beca.dir/src.cxx.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo /TP -DHAVE_U_INT64_T  /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1 /showIncludes /FoCMakeFiles\cmTC_8beca.dir\src.cxx.obj /FdCMakeFiles\cmTC_8beca.dir\ /FS -c src.cxx
+src.cxx(5): error C4430: Fehlender Typspezifizierer - int wird angenommen. Hinweis: "default-int" wird von C++ nicht unterstützt.
+src.cxx(5): error C2146: Syntaxfehler: Fehlendes ";" vor Bezeichner "typeVar"
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+
+    #include<sys/types.h>
+#include<inttypes.h>
+#include<stdint.h>
+ u_int64_t typeVar;
+    int main() {
+        return 0;
+    }
+    
+Performing C++ SOURCE FILE Test SUPPORTS_NO_VARIADIC_MACROS_FLAG failed with the following output:
+Change Dir: C:/Users/Bub/Desktop/GitHub/Madgine/util/shadergen/ext/DirectXShaderCompiler/out/build/windows-default/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_34eb4 && [1/2] Building CXX object CMakeFiles\cmTC_34eb4.dir\src.cxx.obj
+FAILED: CMakeFiles/cmTC_34eb4.dir/src.cxx.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo /TP -DSUPPORTS_NO_VARIADIC_MACROS_FLAG  /DWIN32 /D_WINDOWS /W3 /GR /EHsc  /MDd /Zi /Ob0 /Od /RTC1   -Wno-variadic-macros /showIncludes /FoCMakeFiles\cmTC_34eb4.dir\src.cxx.obj /FdCMakeFiles\cmTC_34eb4.dir\ /FS -c src.cxx
+cl : Befehlszeile error D8021 : Ungültiges numerisches Argument /Wno-variadic-macros.
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+int main() { return 0; }
