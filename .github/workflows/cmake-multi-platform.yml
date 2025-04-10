@@ -54,12 +54,14 @@ jobs:
       shell: pwsh
       run: |
           if ($env:RUNNER_OS -eq "Windows") {
-            rd /s /q ${{ matrix.os }}.zip
-            7z a ${{ matrix.os }}.zip **/ShaderGen **/ShaderGen.exe **/dxcompiler.dylib **/dxcompiler.lib **/dxcompiler.dll 
+            if (test-path ${{ matrix.os }}.zip) {
+              remove-item ${{ matrix.os }}.zip
+            }
+            7z a ${{ matrix.os }}.zip ShaderGen.exe dxcompiler.dll 
           }
           else {
             rm -rf ${{ matrix.os }}.zip
-            zip -r ${{ matrix.os }}.zip . -i **/ShaderGen **/ShaderGen.exe **/dxcompiler.dylib **/dxcompiler.lib **/dxcompiler.dll
+            zip -r ${{ matrix.os }}.zip . -i **/ShaderGen **/dxcompiler.dylib **/dxcompiler.so **/dxcompiler.a
           }
          
 
