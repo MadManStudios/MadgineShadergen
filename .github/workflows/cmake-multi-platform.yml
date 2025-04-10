@@ -50,14 +50,15 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
 
+    - name: Zip Binaries
+      run: |
+          rm -rf ${{ matrix.os }}.zip
+          zip -r ${{ matrix.os }}.zip ${{ matrix.os }} **/ShaderGen **/ShaderGen.exe **/dxcompiler.dylib **/dxcompiler.lib **/dxcompiler.dll
+
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
         name: ${{ matrix.os }}
         tag_name: main
-        files: |
-          **/ShaderGen 
-          **/ShaderGen.exe 
-          **/dxcompiler.dylib 
-          **/dxcompiler.lib 
-          **/dxcompiler.dll
+        files: ${{ matrix.os }}.zip
+          
