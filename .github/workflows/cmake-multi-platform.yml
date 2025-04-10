@@ -52,13 +52,20 @@ jobs:
 
     - name: Zip Binaries
       run: |
-          rm -rf ${{ matrix.os }}.zip
-          zip -r ${{ matrix.os }}.zip ${{ matrix.os }} **/ShaderGen **/ShaderGen.exe **/dxcompiler.dylib **/dxcompiler.lib **/dxcompiler.dll
+          if ($env:RUNNER_OS -eq "Windows") {
+            rd /s /q ${{ matrix.os }}.zip
+            7z a ${{ matrix.os }}.zip **/ShaderGen **/ShaderGen.exe **/dxcompiler.dylib **/dxcompiler.lib **/dxcompiler.dll 
+          }
+          else {
+            rm -rf ${{ matrix.os }}.zip
+            zip -r ${{ matrix.os }}.zip . -i **/ShaderGen **/ShaderGen.exe **/dxcompiler.dylib **/dxcompiler.lib **/dxcompiler.dll
+          }
+         
 
     - name: Release
       uses: softprops/action-gh-release@v2
       with:
-        name: ${{ matrix.os }}
+        name: latest
         tag_name: main
         files: ${{ matrix.os }}.zip
           
