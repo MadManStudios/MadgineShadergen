@@ -55,4 +55,4 @@ jobs:
       with:
         name: ${{ matrix.os }}
         tag_name: main
-        files: ${{ steps.strings.outputs.build-output-dir }}/**/ShaderGen.* ${{ steps.strings.outputs.build-output-dir }}/**/dxcompiler.*
+        files: ShaderGen ShaderGen.exe dxcompiler.dylib dxcompiler.lib dxcompiler.dll
