@@ -1,8 +1,12 @@
 
 PROJECT(ShaderGen)
 
+if (NOT CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  add_compile_options(-fms-extensions)
+endif()
+
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-  add_compile_options(-fms-extensions -Wno-language-extension-token)
+  add_compile_options(-Wno-language-extension-token)
 endif()
 
 set(CMAKE_CXX_STANDARD 14)
