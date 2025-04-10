@@ -51,4 +51,5 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         name: ${{ matrix.os }}
+        tag-name: main
         files: ShaderGen.* dxcompiler.*
