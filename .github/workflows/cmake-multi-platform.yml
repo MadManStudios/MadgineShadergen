@@ -55,4 +55,9 @@ jobs:
       with:
         name: ${{ matrix.os }}
         tag_name: main
-        files: **/ShaderGen **/ShaderGen.exe **/dxcompiler.dylib **/dxcompiler.lib **/dxcompiler.dll
+        files: |
+          **/ShaderGen 
+          **/ShaderGen.exe 
+          **/dxcompiler.dylib 
+          **/dxcompiler.lib 
+          **/dxcompiler.dll
