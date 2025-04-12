@@ -2,12 +2,12 @@ set(LLVM_LINK_COMPONENTS
   Analysis
   AsmParser
   Core
-  DXIL  # HLSL Change
   IPA
   Support
   )
 
 set(IRSources
+  AsmWriterTest.cpp
   AttributesTest.cpp
   ConstantRangeTest.cpp
   ConstantsTest.cpp

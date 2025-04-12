@@ -23,6 +23,8 @@
 #include "clang/SPIRV/String.h"
 // clang-format on
 
+#include <functional>
+
 namespace clang {
 namespace spirv {
 
@@ -32,7 +34,7 @@ static const uint32_t kMaximumCharOpSource = 0xFFFA;
 static const uint32_t kMaximumCharOpSourceContinued = 0xFFFD;
 
 // Since OpSource does not have a result id, this is used to mark it was emitted
-static const uint32_t kEmittedSourceForOpSource = 1; 
+static const uint32_t kEmittedSourceForOpSource = 1;
 
 /// Chops the given original string into multiple smaller ones to make sure they
 /// can be encoded in a sequence of OpSourceContinued instructions following an
@@ -131,7 +133,9 @@ uint32_t getHeaderVersion(spv_target_env env) {
 
 // Read the file in |filePath| and returns its contents as a string.
 // This function will be used by DebugSource to get its source code.
-std::string ReadSourceCode(llvm::StringRef filePath) {
+std::string
+ReadSourceCode(llvm::StringRef filePath,
+               const clang::spirv::SpirvCodeGenOptions &spvOptions) {
   try {
     dxc::DxcDllSupport dllSupport;
     IFT(dllSupport.Initialize());
@@ -148,15 +152,21 @@ std::string ReadSourceCode(llvm::StringRef filePath) {
     return std::string(utf8Source->GetStringPointer(),
                        utf8Source->GetStringLength());
   } catch (...) {
-    // An exception has occured while reading the file
+    // An exception has occurred while reading the file
+    // return the original source (which may have been supplied directly)
+    if (!spvOptions.origSource.empty()) {
+      return spvOptions.origSource.c_str();
+    }
     return "";
   }
 }
 
 // Returns a vector of strings after chopping |inst| for the operand size
 // limitation of OpSource.
-llvm::SmallVector<std::string, 2> getChoppedSourceCode(SpirvSource *inst) {
-  std::string text = ReadSourceCode(inst->getFile()->getString());
+llvm::SmallVector<std::string, 2>
+getChoppedSourceCode(SpirvSource *inst,
+                     const clang::spirv::SpirvCodeGenOptions &spvOptions) {
+  std::string text = ReadSourceCode(inst->getFile()->getString(), spvOptions);
   if (text.empty()) {
     text = inst->getSource().str();
   }
@@ -260,8 +270,9 @@ void EmitVisitor::emitDebugLine(spv::Op op, const SourceLocation &loc,
   // Technically entry function wrappers do not exist in HLSL. They are just
   // created by DXC. We do not want to emit line information for their
   // instructions. To prevent spirv-opt from removing all debug info, we emit
-  // at least a single OpLine to specify the end of the shader.
-  if (inEntryFunctionWrapper && op != spv::Op::OpReturn)
+  // OpLines to specify the beginning and end of the function.
+  if (inEntryFunctionWrapper &&
+      (op != spv::Op::OpReturn && op != spv::Op::OpFunction))
     return;
 
   // Based on SPIR-V spec, OpSelectionMerge must immediately precede either an
@@ -374,22 +385,8 @@ void EmitVisitor::emitDebugLine(spv::Op op, const SourceLocation &loc,
     debugColumnEnd = columnEnd;
   }
 
-  if (emittedSource[fileId] == 0) {
-    if (!spvOptions.debugInfoVulkan) {
-      SpirvString *fileNameInst =
-          new (context) SpirvString(/*SourceLocation*/ {}, fileName);
-      visit(fileNameInst);
-      SpirvSource *src = new (context)
-          SpirvSource(/*SourceLocation*/ {}, spv::SourceLanguage::HLSL,
-                      hlslVersion, fileNameInst, "");
-      visit(src);
-      spvInstructions.push_back(src);
-      spvInstructions.push_back(fileNameInst);
-    } else {
-      SpirvDebugSource *src = new (context) SpirvDebugSource(fileName, "");
-      visit(src);
-      spvInstructions.push_back(src);
-    }
+  if (columnEnd < columnStart) {
+    columnEnd = columnStart = 0;
   }
 
   curInst.clear();
@@ -414,6 +411,17 @@ void EmitVisitor::emitDebugLine(spv::Op op, const SourceLocation &loc,
   section->insert(section->end(), curInst.begin(), curInst.end());
 }
 
+bool EmitVisitor::emitCooperativeMatrixLength(SpirvUnaryOp *inst) {
+  initInstruction(inst);
+  curInst.push_back(inst->getResultTypeId());
+  curInst.push_back(getOrAssignResultId<SpirvInstruction>(inst));
+  const uint32_t operandResultTypeId =
+      typeHandler.emitType(inst->getOperand()->getResultType());
+  curInst.push_back(operandResultTypeId);
+  finalizeInstruction(&mainBinary);
+  return true;
+}
+
 void EmitVisitor::initInstruction(SpirvInstruction *inst) {
   // Emit the result type if the instruction has a result type.
   if (inst->hasResultType()) {
@@ -432,7 +440,8 @@ void EmitVisitor::initInstruction(SpirvInstruction *inst) {
                                spv::Decoration::RelaxedPrecision, {});
   }
   // Emit NoContraction decoration (if any).
-  if (inst->isPrecise() && inst->isArithmeticInstruction()) {
+  if ((spvOptions.IEEEStrict || inst->isPrecise()) &&
+      inst->isArithmeticInstruction()) {
     typeHandler.emitDecoration(getOrAssignResultId<SpirvInstruction>(inst),
                                spv::Decoration::NoContraction, {});
   }
@@ -663,7 +672,7 @@ bool EmitVisitor::visit(SpirvSource *inst) {
   // Chop up the source into multiple segments if it is too long.
   llvm::SmallVector<std::string, 2> choppedSrcCode;
   if (spvOptions.debugInfoSource && inst->hasFile()) {
-    choppedSrcCode = getChoppedSourceCode(inst);
+    choppedSrcCode = getChoppedSourceCode(inst, spvOptions);
     if (!choppedSrcCode.empty()) {
       // Note: in order to improve performance and avoid multiple copies, we
       // encode this (potentially large) string directly into the
@@ -844,7 +853,7 @@ bool EmitVisitor::visit(SpirvSwitch *inst) {
   curInst.push_back(
       getOrAssignResultId<SpirvBasicBlock>(inst->getDefaultLabel()));
   for (const auto &target : inst->getTargets()) {
-    curInst.push_back(target.first);
+    typeHandler.emitIntLiteral(target.first, curInst);
     curInst.push_back(getOrAssignResultId<SpirvBasicBlock>(target.second));
   }
   finalizeInstruction(&mainBinary);
@@ -1007,6 +1016,13 @@ bool EmitVisitor::visit(SpirvConstantNull *inst) {
   return true;
 }
 
+bool EmitVisitor::visit(SpirvUndef *inst) {
+  typeHandler.getOrCreateUndef(inst);
+  emitDebugNameForInstruction(getOrAssignResultId<SpirvInstruction>(inst),
+                              inst->getDebugName());
+  return true;
+}
+
 bool EmitVisitor::visit(SpirvCompositeConstruct *inst) {
   initInstruction(inst);
   curInst.push_back(inst->getResultTypeId());
@@ -1088,35 +1104,7 @@ bool EmitVisitor::visit(SpirvFunctionCall *inst) {
   return true;
 }
 
-bool EmitVisitor::visit(SpirvNonUniformBinaryOp *inst) {
-  initInstruction(inst);
-  curInst.push_back(inst->getResultTypeId());
-  curInst.push_back(getOrAssignResultId<SpirvInstruction>(inst));
-  curInst.push_back(typeHandler.getOrCreateConstantInt(
-      llvm::APInt(32, static_cast<uint32_t>(inst->getExecutionScope())),
-      context.getUIntType(32), /* isSpecConst */ false));
-  curInst.push_back(getOrAssignResultId<SpirvInstruction>(inst->getArg1()));
-  curInst.push_back(getOrAssignResultId<SpirvInstruction>(inst->getArg2()));
-  finalizeInstruction(&mainBinary);
-  emitDebugNameForInstruction(getOrAssignResultId<SpirvInstruction>(inst),
-                              inst->getDebugName());
-  return true;
-}
-
-bool EmitVisitor::visit(SpirvNonUniformElect *inst) {
-  initInstruction(inst);
-  curInst.push_back(inst->getResultTypeId());
-  curInst.push_back(getOrAssignResultId<SpirvInstruction>(inst));
-  curInst.push_back(typeHandler.getOrCreateConstantInt(
-      llvm::APInt(32, static_cast<uint32_t>(inst->getExecutionScope())),
-      context.getUIntType(32), /* isSpecConst */ false));
-  finalizeInstruction(&mainBinary);
-  emitDebugNameForInstruction(getOrAssignResultId<SpirvInstruction>(inst),
-                              inst->getDebugName());
-  return true;
-}
-
-bool EmitVisitor::visit(SpirvNonUniformUnaryOp *inst) {
+bool EmitVisitor::visit(SpirvGroupNonUniformOp *inst) {
   initInstruction(inst);
   curInst.push_back(inst->getResultTypeId());
   curInst.push_back(getOrAssignResultId<SpirvInstruction>(inst));
@@ -1125,7 +1113,8 @@ bool EmitVisitor::visit(SpirvNonUniformUnaryOp *inst) {
       context.getUIntType(32), /* isSpecConst */ false));
   if (inst->hasGroupOp())
     curInst.push_back(static_cast<uint32_t>(inst->getGroupOp()));
-  curInst.push_back(getOrAssignResultId<SpirvInstruction>(inst->getArg()));
+  for (auto *operand : inst->getOperands())
+    curInst.push_back(getOrAssignResultId<SpirvInstruction>(operand));
   finalizeInstruction(&mainBinary);
   emitDebugNameForInstruction(getOrAssignResultId<SpirvInstruction>(inst),
                               inst->getDebugName());
@@ -1330,7 +1319,18 @@ bool EmitVisitor::visit(SpirvStore *inst) {
   return true;
 }
 
+bool EmitVisitor::visit(SpirvNullaryOp *inst) {
+  initInstruction(inst);
+
+  finalizeInstruction(&mainBinary);
+  return true;
+}
+
 bool EmitVisitor::visit(SpirvUnaryOp *inst) {
+  if (inst->getopcode() == spv::Op::OpCooperativeMatrixLengthKHR) {
+    return emitCooperativeMatrixLength(inst);
+  }
+
   initInstruction(inst);
   curInst.push_back(inst->getResultTypeId());
   curInst.push_back(getOrAssignResultId<SpirvInstruction>(inst));
@@ -1434,14 +1434,15 @@ void EmitVisitor::generateDebugSourceContinued(uint32_t textId,
   finalizeInstruction(&richDebugInfo);
 }
 
-void EmitVisitor::generateChoppedSource(uint32_t fileId, SpirvDebugSource *inst) {
+void EmitVisitor::generateChoppedSource(uint32_t fileId,
+                                        SpirvDebugSource *inst) {
   // Chop up the source into multiple segments if it is too long.
   llvm::SmallVector<std::string, 2> choppedSrcCode;
   uint32_t textId = 0;
   if (spvOptions.debugInfoSource) {
     std::string text = inst->getContent();
     if (text.empty())
-      text = ReadSourceCode(inst->getFile());
+      text = ReadSourceCode(inst->getFile(), spvOptions);
     if (!text.empty()) {
       // Maximum characters for DebugSource and DebugSourceContinued
       // OpString literal minus terminating null.
@@ -1482,7 +1483,7 @@ bool EmitVisitor::visit(SpirvDebugSource *inst) {
   // NonSemantic.Shader.DebugInfo.100 logic above can be used for both cases.
   uint32_t textId = 0;
   if (spvOptions.debugInfoSource) {
-    auto text = ReadSourceCode(inst->getFile());
+    auto text = ReadSourceCode(inst->getFile(), spvOptions);
     if (!text.empty())
       textId = getOrCreateOpStringId(text);
   }
@@ -1671,6 +1672,21 @@ bool EmitVisitor::visit(SpirvDebugTypeVector *inst) {
   curInst.push_back(
       getOrAssignResultId<SpirvInstruction>(inst->getElementType()));
   curInst.push_back(getLiteralEncodedForDebugInfo(inst->getElementCount()));
+  finalizeInstruction(&richDebugInfo);
+  return true;
+}
+
+bool EmitVisitor::visit(SpirvDebugTypeMatrix *inst) {
+  initInstruction(inst);
+  curInst.push_back(inst->getResultTypeId());
+  curInst.push_back(getOrAssignResultId<SpirvInstruction>(inst));
+  curInst.push_back(
+      getOrAssignResultId<SpirvInstruction>(inst->getInstructionSet()));
+  curInst.push_back(inst->getDebugOpcode());
+  curInst.push_back(
+      getOrAssignResultId<SpirvInstruction>(inst->getVectorType()));
+  curInst.push_back(getLiteralEncodedForDebugInfo(inst->getVectorCount()));
+  curInst.push_back(getLiteralEncodedForDebugInfo(1));
   finalizeInstruction(&richDebugInfo);
   return true;
 }
@@ -1960,6 +1976,35 @@ bool EmitVisitor::visit(SpirvIntrinsicInstruction *inst) {
   return true;
 }
 
+bool EmitVisitor::visit(SpirvEmitMeshTasksEXT *inst) {
+  initInstruction(inst);
+
+  curInst.push_back(
+      getOrAssignResultId<SpirvInstruction>(inst->getXDimension()));
+  curInst.push_back(
+      getOrAssignResultId<SpirvInstruction>(inst->getYDimension()));
+  curInst.push_back(
+      getOrAssignResultId<SpirvInstruction>(inst->getZDimension()));
+  if (inst->getPayload() != nullptr) {
+    curInst.push_back(
+        getOrAssignResultId<SpirvInstruction>(inst->getPayload()));
+  }
+
+  finalizeInstruction(&mainBinary);
+  return true;
+}
+bool EmitVisitor::visit(SpirvSetMeshOutputsEXT *inst) {
+  initInstruction(inst);
+
+  curInst.push_back(
+      getOrAssignResultId<SpirvInstruction>(inst->getVertexCount()));
+  curInst.push_back(
+      getOrAssignResultId<SpirvInstruction>(inst->getPrimitiveCount()));
+
+  finalizeInstruction(&mainBinary);
+  return true;
+}
+
 // EmitTypeHandler ------
 
 void EmitTypeHandler::initTypeInstruction(spv::Op op) {
@@ -2001,6 +2046,8 @@ uint32_t EmitTypeHandler::getOrCreateConstant(SpirvConstant *inst) {
     return getOrCreateConstantNull(constNull);
   } else if (auto *constBool = dyn_cast<SpirvConstantBoolean>(inst)) {
     return getOrCreateConstantBool(constBool);
+  } else if (auto *constUndef = dyn_cast<SpirvUndef>(inst)) {
+    return getOrCreateUndef(constUndef);
   }
 
   llvm_unreachable("cannot emit unknown constant type");
@@ -2061,6 +2108,31 @@ uint32_t EmitTypeHandler::getOrCreateConstantNull(SpirvConstantNull *inst) {
   return inst->getResultId();
 }
 
+uint32_t EmitTypeHandler::getOrCreateUndef(SpirvUndef *inst) {
+  auto canonicalType = inst->getAstResultType().getCanonicalType();
+  auto found = std::find_if(
+      emittedUndef.begin(), emittedUndef.end(),
+      [canonicalType](SpirvUndef *cached) {
+        return cached->getAstResultType().getCanonicalType() == canonicalType;
+      });
+
+  if (found != emittedUndef.end()) {
+    // We have already emitted this constant. Reuse.
+    inst->setResultId((*found)->getResultId());
+    return inst->getResultId();
+  }
+
+  // Constant wasn't emitted in the past.
+  const uint32_t typeId = emitType(inst->getResultType());
+  initTypeInstruction(inst->getopcode());
+  curTypeInst.push_back(typeId);
+  curTypeInst.push_back(getOrAssignResultId<SpirvInstruction>(inst));
+  finalizeTypeInstruction();
+  // Remember this constant for the future
+  emittedUndef.push_back(inst);
+  return inst->getResultId();
+}
+
 uint32_t EmitTypeHandler::getOrCreateConstantFloat(SpirvConstantFloat *inst) {
   llvm::APFloat value = inst->getValue();
   const SpirvType *type = inst->getResultType();
@@ -2077,9 +2149,9 @@ uint32_t EmitTypeHandler::getOrCreateConstantFloat(SpirvConstantFloat *inst) {
   if (valueBitwidth != typeBitwidth) {
     bool losesInfo = false;
     const llvm::fltSemantics &targetSemantics =
-        typeBitwidth == 16 ? llvm::APFloat::IEEEhalf
-                           : typeBitwidth == 32 ? llvm::APFloat::IEEEsingle
-                                                : llvm::APFloat::IEEEdouble;
+        typeBitwidth == 16   ? llvm::APFloat::IEEEhalf
+        : typeBitwidth == 32 ? llvm::APFloat::IEEEsingle
+                             : llvm::APFloat::IEEEdouble;
     const auto status = valueToUse.convert(
         targetSemantics, llvm::APFloat::roundingMode::rmTowardZero, &losesInfo);
     if (status != llvm::APFloat::opStatus::opOK &&
@@ -2283,7 +2355,8 @@ EmitTypeHandler::getOrCreateConstantComposite(SpirvConstantComposite *inst) {
   } else {
     // Constant wasn't emitted in the past.
     const uint32_t typeId = emitType(inst->getResultType());
-    initTypeInstruction(spv::Op::OpConstantComposite);
+    initTypeInstruction(isSpecConst ? spv::Op::OpSpecConstantComposite
+                                    : spv::Op::OpConstantComposite);
     curTypeInst.push_back(typeId);
     curTypeInst.push_back(getOrAssignResultId<SpirvInstruction>(inst));
     for (auto constituent : inst->getConstituents())
@@ -2299,6 +2372,17 @@ EmitTypeHandler::getOrCreateConstantComposite(SpirvConstantComposite *inst) {
   }
 
   return inst->getResultId();
+}
+
+static inline bool
+isFieldMergeWithPrevious(const StructType::FieldInfo &previous,
+                         const StructType::FieldInfo &field) {
+  if (previous.fieldIndex == field.fieldIndex) {
+    // Right now, the only reason for those indices to be shared is if both
+    // are merged bitfields.
+    assert(previous.bitfield.hasValue() && field.bitfield.hasValue());
+  }
+  return previous.fieldIndex == field.fieldIndex;
 }
 
 uint32_t EmitTypeHandler::emitType(const SpirvType *type) {
@@ -2375,7 +2459,7 @@ uint32_t EmitTypeHandler::emitType(const SpirvType *type) {
     finalizeTypeInstruction();
   }
   // Sampler types
-  else if (const auto *samplerType = dyn_cast<SamplerType>(type)) {
+  else if (isa<SamplerType>(type)) {
     initTypeInstruction(spv::Op::OpTypeSampler);
     curTypeInst.push_back(id);
     finalizeTypeInstruction();
@@ -2422,24 +2506,32 @@ uint32_t EmitTypeHandler::emitType(const SpirvType *type) {
   }
   // Structure types
   else if (const auto *structType = dyn_cast<StructType>(type)) {
-    llvm::ArrayRef<StructType::FieldInfo> fields = structType->getFields();
-    size_t numFields = fields.size();
-
-    // Emit OpMemberName for the struct members.
-    for (size_t i = 0; i < numFields; ++i)
-      emitNameForType(fields[i].name, id, i);
-
-    llvm::SmallVector<uint32_t, 4> fieldTypeIds;
-    for (auto &field : fields) {
-      fieldTypeIds.push_back(emitType(field.type));
+    std::vector<std::reference_wrapper<const StructType::FieldInfo>>
+        fieldsToGenerate;
+    {
+      llvm::ArrayRef<StructType::FieldInfo> fields = structType->getFields();
+      for (size_t i = 0; i < fields.size(); ++i) {
+        if (i > 0 && isFieldMergeWithPrevious(fields[i - 1], fields[i]))
+          continue;
+        fieldsToGenerate.push_back(std::ref(fields[i]));
+      }
     }
 
-    for (size_t i = 0; i < numFields; ++i) {
-      auto &field = fields[i];
+    // Emit OpMemberName for the struct members.
+    for (size_t i = 0; i < fieldsToGenerate.size(); ++i)
+      emitNameForType(fieldsToGenerate[i].get().name, id, i);
+
+    llvm::SmallVector<uint32_t, 4> fieldTypeIds;
+    for (auto &field : fieldsToGenerate)
+      fieldTypeIds.push_back(emitType(field.get().type));
+
+    for (size_t i = 0; i < fieldsToGenerate.size(); ++i) {
+      const auto &field = fieldsToGenerate[i].get();
       // Offset decorations
-      if (field.offset.hasValue())
+      if (field.offset.hasValue()) {
         emitDecoration(id, spv::Decoration::Offset, {field.offset.getValue()},
                        i);
+      }
 
       // MatrixStride decorations
       if (field.matrixStride.hasValue())
@@ -2504,13 +2596,13 @@ uint32_t EmitTypeHandler::emitType(const SpirvType *type) {
     finalizeTypeInstruction();
   }
   // Acceleration Structure NV type
-  else if (const auto *accType = dyn_cast<AccelerationStructureTypeNV>(type)) {
+  else if (isa<AccelerationStructureTypeNV>(type)) {
     initTypeInstruction(spv::Op::OpTypeAccelerationStructureNV);
     curTypeInst.push_back(id);
     finalizeTypeInstruction();
   }
   // RayQueryType KHR type
-  else if (const auto *rayQueryType = dyn_cast<RayQueryTypeKHR>(type)) {
+  else if (isa<RayQueryTypeKHR>(type)) {
     initTypeInstruction(spv::Op::OpTypeRayQueryKHR);
     curTypeInst.push_back(id);
     finalizeTypeInstruction();
@@ -2521,7 +2613,11 @@ uint32_t EmitTypeHandler::emitType(const SpirvType *type) {
     for (const SpvIntrinsicTypeOperand &operand :
          spvIntrinsicType->getOperands()) {
       if (operand.isTypeOperand) {
-        curTypeInst.push_back(emitType(operand.operand_as_type));
+        // calling emitType recursively will potentially replace the contents of
+        // curTypeInst, so we need to save them and restore after the call
+        std::vector<uint32_t> outerTypeInst = curTypeInst;
+        outerTypeInst.push_back(emitType(operand.operand_as_type));
+        curTypeInst = outerTypeInst;
       } else {
         auto *literal = dyn_cast<SpirvConstant>(operand.operand_as_inst);
         if (literal && literal->isLiteral()) {
@@ -2537,7 +2633,7 @@ uint32_t EmitTypeHandler::emitType(const SpirvType *type) {
   // Note: The type lowering pass should lower all types to SpirvTypes.
   // Therefore, if we find a hybrid type when going through the emitting pass,
   // that is clearly a bug.
-  else if (const auto *hybridType = dyn_cast<HybridType>(type)) {
+  else if (isa<HybridType>(type)) {
     llvm_unreachable("found hybrid type when emitting SPIR-V");
   }
   // Unhandled types
@@ -2552,6 +2648,12 @@ template <typename vecType>
 void EmitTypeHandler::emitIntLiteral(const SpirvConstantInteger *intLiteral,
                                      vecType &outInst) {
   const auto &literalVal = intLiteral->getValue();
+  emitIntLiteral(literalVal, outInst);
+}
+
+template <typename vecType>
+void EmitTypeHandler::emitIntLiteral(const llvm::APInt &literalVal,
+                                     vecType &outInst) {
   bool positive = !literalVal.isNegative();
   if (literalVal.getBitWidth() <= 32) {
     outInst.push_back(positive ? literalVal.getZExtValue()

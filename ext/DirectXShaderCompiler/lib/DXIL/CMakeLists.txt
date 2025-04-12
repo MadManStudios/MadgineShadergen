@@ -14,6 +14,7 @@ add_llvm_library(LLVMDXIL
   DxilMetadataHelper.cpp
   DxilModule.cpp
   DxilModuleHelper.cpp
+  DxilNodeProps.cpp
   DxilOperations.cpp
   DxilResource.cpp
   DxilResourceBase.cpp

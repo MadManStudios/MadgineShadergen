@@ -28,6 +28,7 @@
 #include <ios>
 #include <sys/stat.h>
 #include <system_error>
+#include <float.h> // HLSL Change: add for '_fpclass'
 
 // <fcntl.h> may provide O_BINARY.
 #if defined(HAVE_FCNTL_H)
@@ -87,7 +88,7 @@ void raw_ostream::SetBuffered() {
     SetUnbuffered();
 }
 
-void raw_ostream::SetBufferAndMode(_In_opt_ char *BufferStart, size_t Size,
+void raw_ostream::SetBufferAndMode(char *BufferStart, size_t Size,
                                    BufferKind Mode) {
   assert(((Mode == Unbuffered && !BufferStart && Size == 0) ||
           (Mode != Unbuffered && BufferStart && Size != 0)) &&
@@ -372,10 +373,10 @@ void raw_ostream::copy_to_buffer(const char *Ptr, size_t Size) {
   // Handle short strings specially, memcpy isn't very good at very short
   // strings.
   switch (Size) {
-  case 4: OutBufCur[3] = Ptr[3]; // FALL THROUGH
-  case 3: OutBufCur[2] = Ptr[2]; // FALL THROUGH
-  case 2: OutBufCur[1] = Ptr[1]; // FALL THROUGH
-  case 1: OutBufCur[0] = Ptr[0]; // FALL THROUGH
+  case 4: OutBufCur[3] = Ptr[3]; LLVM_FALLTHROUGH; // HLSL Change
+  case 3: OutBufCur[2] = Ptr[2]; LLVM_FALLTHROUGH; // HLSL Change
+  case 2: OutBufCur[1] = Ptr[1]; LLVM_FALLTHROUGH; // HLSL Change
+  case 1: OutBufCur[0] = Ptr[0]; LLVM_FALLTHROUGH; // HLSL Change
   case 0: break;
   default:
     memcpy(OutBufCur, Ptr, Size);
@@ -453,7 +454,7 @@ raw_ostream &raw_ostream::operator<<(const FormattedNumber &FN) {
     while (N) {
       uintptr_t x = N % 16;
       assert(CurPtr > NumberBuffer && "else FN values inconsistent"); // HLSL Change
-      _Analysis_assume_(CurPtr > NumberBuffer); // HLSL Change
+      assert(CurPtr > NumberBuffer); // HLSL Change
       *--CurPtr = (x < 10 ? '0' + x : A + x - 10);
       N /= 16;
     }

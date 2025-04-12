@@ -12,24 +12,24 @@
 #pragma once
 
 #include "dxc/Support/Global.h"
-#include <string>
+#include "dxc/Test/D3DReflectionStrings.h"
+#include <iomanip>
 #include <ostream>
 #include <sstream>
-#include <iomanip>
+#include <string>
 #include <unordered_set>
 
 namespace hlsl {
+using namespace RDAT;
 namespace dump {
 
-template<typename _T>
-struct EnumValue {
+template <typename _T> struct EnumValue {
 public:
   EnumValue(const _T &e) : eValue(e) {}
   _T eValue;
 };
 
-template<typename _T, typename _StoreT = uint32_t>
-struct FlagsValue {
+template <typename _T, typename _StoreT = uint32_t> struct FlagsValue {
 public:
   FlagsValue(const _StoreT &f) : Flags(f) {}
   _StoreT Flags;
@@ -45,55 +45,52 @@ class DumpContext {
 private:
   std::ostream &m_out;
   unsigned m_indent = 0;
-  bool m_bCheckByName = false;
   std::unordered_set<size_t> m_visited;
 
   std::ostream &DoIndent() {
     return m_out << std::setfill(' ')
-      << std::setw((m_indent > 16) ? 32 : m_indent * 2)
-      << "";
+                 << std::setw((m_indent > 16) ? 32 : m_indent * 2) << "";
   }
 
 public:
   DumpContext(std::ostream &outStream) : m_out(outStream) {}
 
-  void Indent() { if (m_indent < (1 << 30)) m_indent++; }
-  void Dedent() { if (m_indent > 0) m_indent--; }
-
-  template<typename _T>
-  std::ostream &Write(_T t) {
-    return Write(m_out, t);
+  void Indent() {
+    if (m_indent < (1 << 30))
+      m_indent++;
   }
-  template<typename _T, typename... Args>
+  void Dedent() {
+    if (m_indent > 0)
+      m_indent--;
+  }
+
+  template <typename _T> std::ostream &Write(_T t) { return Write(m_out, t); }
+  template <typename _T, typename... Args>
   std::ostream &Write(_T t, Args... args) {
     return Write(Write(m_out, t), args...);
   }
-  template<typename _T>
-  std::ostream &Write(std::ostream &out, _T t) {
+  template <typename _T> std::ostream &Write(std::ostream &out, _T t) {
     return out << t;
   }
-  template<>
-  std::ostream &Write<uint8_t>(std::ostream &out, uint8_t t) {
-    return out << (unsigned)t;
-  }
-  template<typename _T, typename... Args>
+  template <typename _T, typename... Args>
   std::ostream &Write(std::ostream &out, _T t, Args... args) {
     return Write(Write(out, t), args...);
   }
 
-  template<typename _T>
-  std::ostream &WriteLn(_T t) {
+  template <typename _T> std::ostream &WriteLn(_T t) {
     return Write(DoIndent(), t) << std::endl
-      << std::resetiosflags(std::ios_base::basefield | std::ios_base::showbase);
+                                << std::resetiosflags(std::ios_base::basefield |
+                                                      std::ios_base::showbase);
   }
-  template<typename _T, typename... Args>
+  template <typename _T, typename... Args>
   std::ostream &WriteLn(_T t, Args... args) {
-    return Write(Write(DoIndent(), t), args...) << std::endl
-      << std::resetiosflags(std::ios_base::basefield | std::ios_base::showbase);
+    return Write(Write(DoIndent(), t), args...)
+           << std::endl
+           << std::resetiosflags(std::ios_base::basefield |
+                                 std::ios_base::showbase);
   }
 
-  template <typename _T>
-  std::ostream &WriteEnumValue(_T eValue) {
+  template <typename _T> std::ostream &WriteEnumValue(_T eValue) {
     const char *szValue = ToString(eValue);
     if (szValue)
       return Write(szValue);
@@ -101,25 +98,28 @@ public:
       return Write("<unknown: ", std::hex, std::showbase, (UINT)eValue, ">");
   }
 
-  template<typename _T>
-  void DumpEnum(const char *Name, _T eValue) {
+  template <typename _T> void DumpEnum(const char *Name, _T eValue) {
     WriteLn(Name, ": ", EnumValue<_T>(eValue));
   }
-  template<typename _T, typename _StoreT = uint32_t>
+  template <typename _T, typename _StoreT = uint32_t>
   void DumpFlags(const char *Name, _StoreT Flags) {
     WriteLn(Name, ": ", FlagsValue<_T, _StoreT>(Flags));
   }
 
-  template<typename... Args>
-  void Failure(Args... args) {
+  template <typename... Args> void Failure(Args... args) {
     WriteLn("Failed: ", args...);
   }
 
   // Return true if ptr has not yet been visited, prevents recursive dumping
   bool Visit(size_t value) { return m_visited.insert(value).second; }
-  bool Visit(const void *ptr) { return Visit((size_t)ptr); }
+  bool Visit(const void *ptr) { return ptr ? Visit((size_t)ptr) : false; }
   void VisitReset() { m_visited.clear(); }
 };
+
+template <>
+inline std::ostream &DumpContext::Write<uint8_t>(std::ostream &out, uint8_t t) {
+  return out << (unsigned)t;
+}
 
 // Copied from llvm/ADT/StringExtras.h
 inline char hexdigit(unsigned X, bool LowerCase = false) {
@@ -142,16 +142,18 @@ inline std::string EscapedString(const char *text) {
   return ss.str();
 }
 
-template<typename _T>
-std::ostream& operator<<(std::ostream& out, const EnumValue<_T> &obj) {
+template <typename _T>
+std::ostream &operator<<(std::ostream &out, const EnumValue<_T> &obj) {
   if (const char *szValue = ToString(obj.eValue))
     return out << szValue;
   else
-    return out << "<unknown: " << std::hex << std::showbase << (UINT)obj.eValue << ">";
+    return out << "<unknown: " << std::hex << std::showbase << (UINT)obj.eValue
+               << ">";
 }
 
-template<typename _T, typename _StoreT>
-std::ostream& operator<<(std::ostream& out, const FlagsValue<_T, _StoreT> &obj) {
+template <typename _T, typename _StoreT>
+std::ostream &operator<<(std::ostream &out,
+                         const FlagsValue<_T, _StoreT> &obj) {
   _StoreT Flags = obj.Flags;
   if (!Flags) {
     const char *szValue = ToString((_T)0);
@@ -173,7 +175,8 @@ std::ostream& operator<<(std::ostream& out, const FlagsValue<_T, _StoreT> &obj) 
   return out;
 }
 
-inline std::ostream& operator<<(std::ostream& out, const QuotedStringValue &obj) {
+inline std::ostream &operator<<(std::ostream &out,
+                                const QuotedStringValue &obj) {
   if (!obj.Str)
     return out << "<null string pointer>";
   return out << "\"" << EscapedString(obj.Str) << "\"";

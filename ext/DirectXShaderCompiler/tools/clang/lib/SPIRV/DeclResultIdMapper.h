@@ -71,14 +71,19 @@ public:
   CounterIdAliasPair(SpirvVariable *var, bool alias)
       : counterVar(var), isAlias(alias) {}
 
+  /// Returns the pointer to the counter variable alias. This returns a pointer
+  /// that can be used as the address to a store instruction when storing to an
+  /// alias counter.
+  SpirvInstruction *getAliasAddress() const;
+
   /// Returns the pointer to the counter variable. Dereferences first if this is
   /// an alias to a counter variable.
-  SpirvInstruction *get(SpirvBuilder &builder, SpirvContext &spvContext) const;
+  SpirvInstruction *getCounterVariable(SpirvBuilder &builder,
+                                       SpirvContext &spvContext) const;
 
-  /// Stores the counter variable's pointer in srcPair to the curent counter
+  /// Stores the counter variable pointed to by src to the curent counter
   /// variable. The current counter variable must be an alias.
-  inline void assign(const CounterIdAliasPair &srcPair, SpirvBuilder &,
-                     SpirvContext &) const;
+  inline void assign(SpirvInstruction *src, SpirvBuilder &) const;
 
 private:
   SpirvVariable *counterVar;
@@ -184,15 +189,28 @@ private:
 /// type, the fields with attached semantics will need to be translated into
 /// stage variables per Vulkan's requirements.
 class DeclResultIdMapper {
+  /// \brief An internal class to handle binding number allocation.
+  class BindingSet;
+
 public:
   inline DeclResultIdMapper(ASTContext &context, SpirvContext &spirvContext,
                             SpirvBuilder &spirvBuilder, SpirvEmitter &emitter,
                             FeatureManager &features,
                             const SpirvCodeGenOptions &spirvOptions);
 
-  /// \brief Returns the SPIR-V builtin variable.
+  /// \brief Returns the SPIR-V builtin variable. Uses sc as default storage
+  /// class.
+  SpirvVariable *getBuiltinVar(spv::BuiltIn builtIn, QualType type,
+                               spv::StorageClass sc, SourceLocation);
+
+  /// \brief Returns the SPIR-V builtin variable. Tries to infer storage class
+  /// from the builtin.
   SpirvVariable *getBuiltinVar(spv::BuiltIn builtIn, QualType type,
                                SourceLocation);
+
+  /// \brief If var is a raytracing stage variable, returns its entry point,
+  /// otherwise returns nullptr.
+  SpirvFunction *getRayTracingStageVarEntryFunction(SpirvVariable *var);
 
   /// \brief Creates the stage output variables by parsing the semantics
   /// attached to the given function's parameter or return value and returns
@@ -221,6 +239,9 @@ public:
   /// \brief Creates stage variables for raytracing.
   SpirvVariable *createRayTracingNVStageVar(spv::StorageClass sc,
                                             const VarDecl *decl);
+  SpirvVariable *createRayTracingNVStageVar(spv::StorageClass sc, QualType type,
+                                            std::string name, bool isPrecise,
+                                            bool isNointerp);
 
   /// \brief Creates the taskNV stage variables for payload struct variable
   /// and returns true on success. SPIR-V instructions will also be generated
@@ -259,8 +280,16 @@ public:
   SpirvVariable *createFileVar(const VarDecl *var,
                                llvm::Optional<SpirvInstruction *> init);
 
+  /// Creates a global variable for resource heaps containing elements of type
+  /// |type|.
+  SpirvVariable *createResourceHeap(const VarDecl *var, QualType type);
+
   /// \brief Creates an external-visible variable and returns its instruction.
   SpirvVariable *createExternVar(const VarDecl *var);
+
+  /// \brief Creates an external-visible variable of type |type| and returns its
+  /// instruction.
+  SpirvVariable *createExternVar(const VarDecl *var, QualType type);
 
   /// \brief Returns an OpString instruction that represents the given VarDecl.
   /// VarDecl must be a variable of string type.
@@ -298,16 +327,6 @@ public:
   /// to do an extra OpAccessChain to get its pointer from the SPIR-V variable
   /// standing for the whole buffer.
   SpirvVariable *createCTBuffer(const HLSLBufferDecl *decl);
-
-  /// \brief Creates a cbuffer/tbuffer from the given decl.
-  ///
-  /// In the AST, a variable whose type is ConstantBuffer/TextureBuffer is
-  /// represented as a VarDecl whose DeclContext is a HLSLBufferDecl. These
-  /// VarDecl's type is labelled as the struct upon which ConstantBuffer/
-  /// TextureBuffer is parameterized. For a such VarDecl, we need to create
-  /// a corresponding SPIR-V variable for it. Later referencing of such a
-  /// VarDecl does not need an extra OpAccessChain.
-  SpirvVariable *createCTBuffer(const VarDecl *decl);
 
   /// \brief Creates a PushConstant block from the given decl.
   SpirvVariable *createPushConstant(const VarDecl *decl);
@@ -357,7 +376,7 @@ public:
     PushConstant,
     Globals,
     ShaderRecordBufferNV,
-    ShaderRecordBufferEXT
+    ShaderRecordBufferKHR
   };
 
   /// Raytracing specific functions
@@ -367,6 +386,10 @@ public:
                                           ContextUsageKind kind);
   SpirvVariable *createShaderRecordBuffer(const HLSLBufferDecl *decl,
                                           ContextUsageKind kind);
+
+  // Records the TypedefDecl or TypeAliasDecl of vk::SpirvType so that any
+  // required capabilities and extensions can be added if the type is used.
+  void recordsSpirvTypeAlias(const Decl *decl);
 
 private:
   /// The struct containing SPIR-V information of a AST Decl.
@@ -384,6 +407,44 @@ private:
     /// Value >= 0 means that this decl is a VarDecl inside a cbuffer/tbuffer
     /// and this is the index; value < 0 means this is just a standalone decl.
     int indexInCTBuffer;
+  };
+
+  /// The struct containing the data needed to create the input and output
+  /// variables for the decl.
+  struct StageVarDataBundle {
+    // The declaration of the variable for which we need to create the stage
+    // variables.
+    const NamedDecl *decl;
+
+    // The HLSL semantic to apply to the variable. Note that this could be
+    // different than the semantic attached to decl because it could inherit
+    // the semantic from the parent declaration if this declaration is a member.
+    SemanticInfo *semantic;
+
+    // True if the variable is not suppose to be interpolated. Note that we
+    // cannot just look at decl to determine this because the attribute might
+    // have been applied to a parent declaration.
+    bool asNoInterp;
+
+    // The sigPoint is the shader stage that this variable should be added to,
+    // and whether it is an input or output.
+    const hlsl::SigPoint *sigPoint;
+
+    // The type to use for the new variable. There are cases where the type
+    // might be different. See the call sites for createStageVars.
+    QualType type;
+
+    // If the shader stage for the variable is HS, DS, or GS, the SPIR-V
+    // requires that the stage variable is an array of type. The arraySize gives
+    // the size for that array.
+    uint32_t arraySize;
+
+    // A prefix to use for the name of the variable.
+    llvm::StringRef namePrefix;
+
+    // If arraySize is not zero, invocationId gives the index to used when
+    // generating a write to the stage variable.
+    llvm::Optional<SpirvInstruction *> invocationId;
   };
 
   /// \brief Returns the SPIR-V information for the given decl.
@@ -429,26 +490,13 @@ public:
   /// \brief Returns the associated counter's (instr-ptr, is-alias-or-not)
   /// pair for the given {RW|Append|Consume}StructuredBuffer variable. Creates
   /// counter for RW buffer if not already created.
-  const CounterIdAliasPair *createOrGetCounterIdAliasPair(
-      const DeclaratorDecl *decl);
+  const CounterIdAliasPair *
+  createOrGetCounterIdAliasPair(const DeclaratorDecl *decl);
 
   /// \brief Returns all the associated counters for the given decl. The decl is
   /// expected to be a struct containing alias RW/Append/Consume structured
   /// buffers. Returns nullptr if it does not.
   const CounterVarFields *getCounterVarFields(const DeclaratorDecl *decl);
-
-  /// \brief Returns the <type-id> for the given cbuffer, tbuffer,
-  /// ConstantBuffer, TextureBuffer, or push constant block.
-  ///
-  /// Note: we need this method because constant/texture buffers and push
-  /// constant blocks are all represented as normal struct types upon which
-  /// they are parameterized. That is different from structured buffers,
-  /// for which we can tell they are not normal structs by investigating
-  /// the name. But for constant/texture buffers and push constant blocks,
-  /// we need to have the additional Block/BufferBlock decoration to keep
-  /// type consistent. Normal translation path for structs via TypeTranslator
-  /// won't attach Block/BufferBlock decoration.
-  const SpirvType *getCTBufferPushConstantType(const DeclContext *decl);
 
   /// \brief Returns all defined stage (builtin/input/ouput) variables for the
   /// entry point function entryPoint in this mapper.
@@ -467,11 +515,6 @@ public:
   /// OpEmitVertex in GS.
   bool writeBackOutputStream(const NamedDecl *decl, QualType type,
                              SpirvInstruction *value, SourceRange range = {});
-
-  /// \brief Negates to get the additive inverse of SV_Position.y if requested.
-  SpirvInstruction *invertYIfRequested(SpirvInstruction *position,
-                                       SourceLocation loc,
-                                       SourceRange range = {});
 
   /// \brief Reciprocates to get the multiplicative inverse of SV_Position.w
   /// if requested.
@@ -534,6 +577,14 @@ public:
                                   QualType outputControlPointType,
                                   SpirvInstruction *ptr);
 
+  spv::ExecutionMode getInterlockExecutionMode();
+
+  /// Records any Spir-V capabilities and extensions for the given type so
+  /// they will be added to the SPIR-V module. The capabilities and extension
+  /// required for the type will be sourced from the decls that were recorded
+  /// using `recordSpirvTypeAlias`.
+  void registerCapabilitiesAndExtensionsForType(const TypedefType *type);
+
 private:
   /// \brief Wrapper method to create a fatal error message and report it
   /// in the diagnostic engine associated with this consumer.
@@ -592,6 +643,32 @@ private:
       llvm::DenseSet<StageVariableLocationInfo, StageVariableLocationInfo>
           *stageVariableLocationInfo);
 
+  /// \brief Get a valid BindingInfo. If no user provided binding info is given,
+  /// allocates a new binding and returns it.
+  static SpirvCodeGenOptions::BindingInfo getBindingInfo(
+      BindingSet &bindingSet,
+      const std::optional<SpirvCodeGenOptions::BindingInfo> &userProvidedInfo);
+
+  /// \brief Decorates used Resource/Sampler descriptor heaps with the correct
+  /// binding/set decorations.
+  void decorateResourceHeapsBindings(BindingSet &bindingSet);
+
+  /// \brief Returns a map that divides all of the shader stage variables into
+  /// separate vectors for each entry point.
+  llvm::DenseMap<const SpirvFunction *, SmallVector<StageVar, 8>>
+  getStageVarsPerFunction();
+
+  /// \brief Decorates all stage variables in `functionStageVars` with proper
+  /// location and returns true on success.
+  ///
+  /// It is assumed that all variables in `functionStageVars` belong to the same
+  /// entry point.
+  ///
+  /// This method will write the location assignment into the module under
+  /// construction.
+  bool finalizeStageIOLocationsForASingleEntryPoint(
+      bool forInput, ArrayRef<StageVar> functionStageVars);
+
   /// \brief Decorates all stage input (if forInput is true) or output (if
   /// forInput is false) variables with proper location and returns true on
   /// success.
@@ -637,36 +714,156 @@ private:
       const DeclContext *decl, int arraySize, ContextUsageKind usageKind,
       llvm::StringRef typeName, llvm::StringRef varName);
 
-  /// Creates all the stage variables mapped from semantics on the given decl.
-  /// Returns true on sucess.
+  /// Creates all of the stage variables that must be generated for the given
+  /// stage variable data. Returns true on success.
   ///
-  /// If decl is of struct type, this means flattening it and create stand-
-  /// alone variables for each field. If arraySize is not zero, the created
-  /// stage variables will have an additional arrayness over its original type.
-  /// This is for supporting HS/DS/GS, which takes in primitives containing
-  /// multiple vertices. asType should be the type we are treating decl as;
-  /// For HS/DS/GS, the outermost arrayness should be discarded and use
-  /// arraySize instead.
+  /// stageVarData: See the definition of StageVarDataBundle to see how that
+  /// data is used.
   ///
-  /// Also performs reading the stage variables and compose a temporary value
-  /// of the given type and writing into *value, if asInput is true. Otherwise,
-  /// Decomposes the *value according to type and writes back into the stage
-  /// output variables, unless noWriteBack is set to true. noWriteBack is used
-  /// by GS since in GS we manually control write back using .Append() method.
+  /// asInput: True if the stage variable is an input.
   ///
-  /// invocationId is only used for HS to indicate the index of the output
-  /// array element to write to.
+  /// TODO(s-perron): a variable that is an input or an output depending on
+  /// value of a flag is very hard to read. This function should be split up
+  /// and flag variables removed.
   ///
-  /// Assumes the decl has semantic attached to itself or to its fields.
-  /// If inheritSemantic is valid, it will override all semantics attached to
-  /// the children of this decl, and the children of this decl will be using
-  /// the semantic in inheritSemantic, with index increasing sequentially.
-  bool createStageVars(const hlsl::SigPoint *sigPoint, const NamedDecl *decl,
-                       bool asInput, QualType asType, uint32_t arraySize,
-                       const llvm::StringRef namePrefix,
-                       llvm::Optional<SpirvInstruction *> invocationId,
-                       SpirvInstruction **value, bool noWriteBack,
-                       SemanticInfo *inheritSemantic);
+  /// [in/out] value: If `asInput` is true, this is an
+  /// output, and will be an instruction that loads the stage variable. If
+  /// `asInput` is false, then it is an input to createStageVars, and contains
+  /// the value to be stored in the new stage variable.
+  ///
+  /// noWriteBack: If true, the newly created stage variable will not be written
+  /// to.
+  bool createStageVars(StageVarDataBundle &stageVarData, bool asInput,
+                       SpirvInstruction **value, bool noWriteBack);
+
+  // Creates a variable to represent the output variable, which must be a
+  // structure. If `noWriteBack` is false, then `value` will be written to the
+  // new variable. Returns true if successful.
+  //
+  // stageVarData: The data needed to create the stage variable.
+  //
+  // noWriteBack: A flag to indicate if the variable should be written or not.
+  //
+  // value: The value to be written to the newly create variable.
+  bool createStructOutputVar(const StageVarDataBundle &stageVarData,
+                             SpirvInstruction *value, bool noWriteBack);
+
+  // Creates a variable to represent the input variable, which must be a
+  // structure. The value is loaded and the instruction with the final value is
+  // return.
+  //
+  // stageVarData: The data needed to create the stage variable.
+  //
+  // noWriteBack: A flag to indicate if the variable should be written or not.
+  SpirvInstruction *createStructInputVar(const StageVarDataBundle &stageVarData,
+                                         bool noWriteBack);
+
+  // Store `value` to the shader output variable `varInstr`. Since the type
+  // could be different, stageVarData is used to know how to convert `value`
+  // into the correct type for `varInstr`.
+  //
+  // varInstr: the output variable that corresponds to `stageVarData`. It must
+  // not be a struct.
+  //
+  // value: The value to be written to the create variable.
+  //
+  // stageVarData: The data that was used to create `varInstr`.
+  void storeToShaderOutputVariable(SpirvVariable *varInstr,
+                                   SpirvInstruction *value,
+                                   const StageVarDataBundle &stageVarData);
+
+  // Loads shader input variable `varInstr`, and modifies the value to match the
+  // type in stageVarData. The struct stageVarData is used to know how to
+  // convert the value loaded from `varInstr` into the correct type.
+  //
+  // varInstr: the input variable that corresponds to `stageVarData`. It must
+  // not be a struct.
+  //
+  // stageVarData: The data that was used to create `varInstr`.
+  SpirvInstruction *
+  loadShaderInputVariable(SpirvVariable *varInstr,
+                          const StageVarDataBundle &stageVarData);
+
+  // Creates a function scope variable to represent the "SV_InstanceID"
+  // semantic, which it not immediately available in SPIR-V. Its value will be
+  // set by subtracting the values of the given InstanceIndex and base instance
+  // variables.
+  //
+  // instanceIndexVar: The SPIR-V input variable that decorated with
+  // InstanceIndex.
+  //
+  // baseInstanceVar: The SPIR-V input variable that is decorated with
+  // BaseInstance.
+  SpirvVariable *getInstanceIdFromIndexAndBase(SpirvVariable *instanceIndexVar,
+                                               SpirvVariable *baseInstanceVar);
+
+  // Creates a function scope variable to represent the "SV_VertexID"
+  // semantic, which is not immediately available in SPIR-V. Its value will be
+  // set by subtracting the values of the given InstanceIndex and base instance
+  // variables.
+  //
+  // vertexIndexVar: The SPIR-V input variable decorated with
+  // vertexIndex.
+  //
+  // baseVertexVar: The SPIR-V input variable decorated with
+  // BaseVertex.
+  SpirvVariable *getVertexIdFromIndexAndBase(SpirvVariable *vertexIndexVar,
+                                             SpirvVariable *baseVertexVar);
+
+  // Creates and returns a variable that is the BaseInstance builtin input. The
+  // variable is also added to the list of stage variable `this->stageVars`. Its
+  // type will be a 32-bit integer.
+  //
+  // sigPoint: the signature point identifying which shader stage the variable
+  // will be used in.
+  //
+  // type: The type to use for the new variable. Must be int or unsigned int.
+  SpirvVariable *getBaseInstanceVariable(const hlsl::SigPoint *sigPoint,
+                                         QualType type);
+
+  // Creates and returns a variable that is the BaseVertex builtin input. The
+  // variable is also added to the list of stage variable `this->stageVars`. Its
+  // type will be a 32-bit integer.
+  //
+  // sigPoint: the signature point identifying which shader stage the variable
+  // will be used in.
+  //
+  // type: The type to use for the new variable. Must be int or unsigned int.
+  SpirvVariable *getBaseVertexVariable(const hlsl::SigPoint *sigPoint,
+                                       QualType type);
+
+  // Creates and return a new interface variable from the information provided.
+  // The new variable with be add to `this->StageVars`.
+  //
+  //
+  // stageVarData: the data needed to create the interface variable. See the
+  // declaration of StageVarDataBundle for the details.
+  SpirvVariable *
+  createSpirvInterfaceVariable(const StageVarDataBundle &stageVarData);
+
+  // Returns the type that the SPIR-V input or output variable must have to
+  // correspond to a variable with the given information.
+  //
+  // stageVarData: the data needed to create the interface variable. See the
+  // declaration of StageVarDataBundle for the details.
+  QualType getTypeForSpirvStageVariable(const StageVarDataBundle &stageVarData);
+
+  // Returns true if all of the stage variable data is consistent with a valid
+  // shader stage variable. Issues an error and returns false otherwise.
+  bool validateShaderStageVar(const StageVarDataBundle &stageVarData);
+
+  /// Returns true if all vk:: attributes usages are valid.
+  bool validateVKAttributes(const NamedDecl *decl);
+
+  /// Returns true if all vk::builtin usages are valid.
+  bool validateVKBuiltins(const StageVarDataBundle &stageVarData);
+
+  // Returns true if the type in stageVarData is compatible with the rest of the
+  // data. Issues an error and returns false otherwise.
+  bool validateShaderStageVarType(const StageVarDataBundle &stageVarData);
+
+  // Returns true if the semantic is consistent wit the rest of the given data.
+  bool isValidSemanticInShaderModel(const StageVarDataBundle &stageVarData);
 
   /// Creates the SPIR-V variable instruction for the given StageVar and returns
   /// the instruction. Also sets whether the StageVar is a SPIR-V builtin and
@@ -676,18 +873,12 @@ private:
                                      const llvm::StringRef name,
                                      SourceLocation);
 
-  /// Returns true if all vk:: attributes usages are valid.
-  bool validateVKAttributes(const NamedDecl *decl);
-
-  /// Returns true if all vk::builtin usages are valid.
-  bool validateVKBuiltins(const NamedDecl *decl,
-                          const hlsl::SigPoint *sigPoint);
-
   /// Methods for creating counter variables associated with the given decl.
 
   /// Creates assoicated counter variables for all AssocCounter cases (see the
   /// comment of CounterVarFields).
   void createCounterVarForDecl(const DeclaratorDecl *decl);
+
   /// Creates the associated counter variable for final RW/Append/Consume
   /// structured buffer. Handles AssocCounter#1 and AssocCounter#2 (see the
   /// comment of CounterVarFields).
@@ -714,7 +905,8 @@ private:
   /// Decorates varInstr of the given asType with proper interpolation modes
   /// considering the attributes on the given decl.
   void decorateInterpolationMode(const NamedDecl *decl, QualType asType,
-                                 SpirvVariable *varInstr);
+                                 SpirvVariable *varInstr,
+                                 const SemanticInfo semanticInfo);
 
   /// Returns the proper SPIR-V storage class (Input or Output) for the given
   /// SigPoint.
@@ -785,6 +977,20 @@ private:
                                           StageVar *stageVar,
                                           SpirvVariable *varInst);
 
+  /// \brief Records which execution mode should be used for rasterizer order
+  /// views.
+  void setInterlockExecutionMode(spv::ExecutionMode mode);
+
+  /// \brief Add |varInstr| to |astDecls| for every Decl for the variable |var|.
+  /// It is possible for a variable to have multiple declarations, and all of
+  /// them should be associated with the same variable.
+  void registerVariableForDecl(const VarDecl *var, SpirvInstruction *varInstr);
+
+  /// \brief Add |spirvInfo| to |astDecls| for every Decl for the variable
+  /// |var|. It is possible for a variable to have multiple declarations, and
+  /// all of them should be associated with the same variable.
+  void registerVariableForDecl(const VarDecl *var, DeclSpirvInfo spirvInfo);
+
 private:
   SpirvBuilder &spvBuilder;
   SpirvEmitter &theEmitter;
@@ -823,9 +1029,13 @@ private:
   /// until a Increment/DecrementCounter method is called on it.
   llvm::DenseMap<const DeclaratorDecl *, SpirvInstruction *> declRWSBuffers;
 
-  /// Mapping from cbuffer/tbuffer/ConstantBuffer/TextureBufer/push-constant
-  /// to the SPIR-V type.
-  llvm::DenseMap<const DeclContext *, const SpirvType *> ctBufferPCTypes;
+  /// The execution mode to use for rasterizer ordered views. Should be set to
+  /// PixelInterlockOrderedEXT (default), SampleInterlockOrderedEXT, or
+  /// ShadingRateInterlockOrderedEXT. This will be set based on which semantics
+  /// are present in input variables, and will be used to determine which
+  /// execution mode to attach to the entry point if it uses rasterizer ordered
+  /// views.
+  llvm::Optional<spv::ExecutionMode> interlockExecutionMode;
 
   /// The SPIR-V builtin variables accessed by WaveGetLaneCount(),
   /// WaveGetLaneIndex() and ray tracing builtins.
@@ -834,6 +1044,11 @@ private:
   /// using HLSL intrinsic function calls. All other builtin variables are
   /// accessed using stage IO variables.
   llvm::DenseMap<uint32_t, SpirvVariable *> builtinToVarMap;
+
+  /// Maps from a raytracing stage variable to the entry point that variable is
+  /// for.
+  llvm::DenseMap<SpirvVariable *, SpirvFunction *>
+      rayTracingStageVarToEntryPoints;
 
   /// Whether the translated SPIR-V binary needs legalization.
   ///
@@ -893,6 +1108,10 @@ private:
   /// an additional SPIR-V optimization pass to flatten such structures.
   bool needsFlatteningCompositeResources;
 
+  uint32_t perspBaryCentricsIndex, noPerspBaryCentricsIndex;
+
+  llvm::SmallVector<const TypedefNameDecl *, 4> typeAliasesWithAttributes;
+
 public:
   /// The gl_PerVertex structs for both input and output
   GlPerVertex glPerVertex;
@@ -906,12 +1125,10 @@ bool SemanticInfo::isTarget() const {
   return semantic && semantic->GetKind() == hlsl::Semantic::Kind::Target;
 }
 
-void CounterIdAliasPair::assign(const CounterIdAliasPair &srcPair,
-                                SpirvBuilder &builder,
-                                SpirvContext &context) const {
+void CounterIdAliasPair::assign(SpirvInstruction *src,
+                                SpirvBuilder &builder) const {
   assert(isAlias);
-  builder.createStore(counterVar, srcPair.get(builder, context),
-                      /* SourceLocation */ {});
+  builder.createStore(counterVar, src, /* SourceLocation */ {});
 }
 
 DeclResultIdMapper::DeclResultIdMapper(ASTContext &context,
@@ -924,6 +1141,7 @@ DeclResultIdMapper::DeclResultIdMapper(ASTContext &context,
       spirvOptions(options), astContext(context), spvContext(spirvContext),
       diags(context.getDiagnostics()), entryFunction(nullptr),
       needsLegalization(false), needsFlatteningCompositeResources(false),
+      perspBaryCentricsIndex(2), noPerspBaryCentricsIndex(2),
       glPerVertex(context, spirvContext, spirvBuilder) {}
 
 bool DeclResultIdMapper::decorateStageIOLocations() {
@@ -933,12 +1151,12 @@ bool DeclResultIdMapper::decorateStageIOLocations() {
     return true;
   }
   // Try both input and output even if input location assignment failed
-  return finalizeStageIOLocations(true) & finalizeStageIOLocations(false);
+  return (int)finalizeStageIOLocations(true) &
+         (int)finalizeStageIOLocations(false);
 }
 
 bool DeclResultIdMapper::isInputStorageClass(const StageVar &v) {
-  return getStorageClassForSigPoint(v.getSigPoint()) ==
-         spv::StorageClass::Input;
+  return v.getStorageClass() == spv::StorageClass::Input;
 }
 
 void DeclResultIdMapper::createFnParamCounterVar(const VarDecl *param) {

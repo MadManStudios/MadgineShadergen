@@ -355,19 +355,6 @@ bool isResourceType(QualType type) {
   return hlsl::IsHLSLResourceType(type);
 }
 
-bool isUserDefinedRecordType(const ASTContext &astContext, QualType type) {
-  if (const auto *rt = type->getAs<RecordType>()) {
-    if (rt->getDecl()->getName() == "mips_slice_type" ||
-        rt->getDecl()->getName() == "sample_slice_type") {
-      return false;
-    }
-  }
-  return type->getAs<RecordType>() != nullptr && !isResourceType(type) &&
-         !isMatrixOrArrayOfMatrix(astContext, type) &&
-         !isScalarOrVectorType(type, nullptr, nullptr) &&
-         !isArrayType(type, nullptr, nullptr);
-}
-
 bool isOrContains16BitType(QualType type, bool enable16BitTypesOption) {
   // Primitive types
   {
@@ -581,16 +568,7 @@ bool canTreatAsSameScalarType(QualType type1, QualType type2) {
          (type1->isSpecificBuiltinType(BuiltinType::LitFloat) &&
           type2->isFloatingType()) ||
          (type2->isSpecificBuiltinType(BuiltinType::LitFloat) &&
-          type1->isFloatingType()) ||
-         // Treat 'literal int' and 'int'/'uint' as the same
-         (type1->isSpecificBuiltinType(BuiltinType::LitInt) &&
-          type2->isIntegerType() &&
-          // Disallow boolean types
-          !type2->isSpecificBuiltinType(BuiltinType::Bool)) ||
-         (type2->isSpecificBuiltinType(BuiltinType::LitInt) &&
-          type1->isIntegerType() &&
-          // Disallow boolean types
-          !type1->isSpecificBuiltinType(BuiltinType::Bool));
+          type1->isFloatingType());
 }
 
 bool canFitIntoOneRegister(const ASTContext &astContext, QualType structType,
@@ -674,6 +652,12 @@ QualType getTypeWithCustomBitwidth(const ASTContext &ctx, QualType type,
     }
   }
 
+  // It could be a vector of size 1, which is treated as a scalar.
+  if (hlsl::IsHLSLVecType(type)) {
+    assert(hlsl::GetHLSLVecSize(type) == 1);
+    type = hlsl::GetHLSLVecElementType(type);
+  }
+
   // Scalar cases.
   assert(!type->isBooleanType());
   assert(type->isIntegerType() || type->isFloatingType());
@@ -751,9 +735,26 @@ bool isSameScalarOrVecType(QualType type1, QualType type2) {
   { // Vector types
     QualType elemType1 = {}, elemType2 = {};
     uint32_t count1 = {}, count2 = {};
-    if (isVectorType(type1, &elemType1, &count1) &&
-        isVectorType(type2, &elemType2, &count2))
-      return count1 == count2 && canTreatAsSameScalarType(elemType1, elemType2);
+    if (!isVectorType(type1, &elemType1, &count1) ||
+        !isVectorType(type2, &elemType2, &count2))
+      return false;
+
+    if (count1 != count2)
+      return false;
+
+    // That's a corner case we had to add to solve #4727.
+    // Normally, clang doesn't have the 'literal type', thus we can rely on
+    // direct type check. But this flavor of the AST has this 'literal int' type
+    // that is sign-less (nor signed or unsigned), until usage. Obviously,
+    // int(3) == literal int (3), but since they are considered different in the
+    // AST, we must check explicitly. Note: this is only valid here, as this is
+    // related to a vector size. Considering int == literal int elsewhere could
+    // break codegen, as SPIR-V does need explicit signedness.
+    return canTreatAsSameScalarType(elemType1, elemType2) ||
+           (elemType1->isIntegerType() &&
+            elemType2->isSpecificBuiltinType(BuiltinType::LitInt)) ||
+           (elemType2->isIntegerType() &&
+            elemType1->isSpecificBuiltinType(BuiltinType::LitInt));
   }
 
   return false;
@@ -863,7 +864,8 @@ bool isStructuredBuffer(QualType type) {
   if (!recordType)
     return false;
   const auto name = recordType->getDecl()->getName();
-  return name == "StructuredBuffer" || name == "RWStructuredBuffer";
+  return name == "StructuredBuffer" || name == "RWStructuredBuffer" ||
+         name == "RasterizerOrderedStructuredBuffer";
 }
 
 bool isNonWritableStructuredBuffer(QualType type) {
@@ -883,7 +885,8 @@ bool isByteAddressBuffer(QualType type) {
 
 bool isRWBuffer(QualType type) {
   if (const auto *rt = type->getAs<RecordType>()) {
-    return rt->getDecl()->getName() == "RWBuffer";
+    const auto name = rt->getDecl()->getName();
+    return name == "RWBuffer" || name == "RasterizerOrderedBuffer";
   }
   return false;
 }
@@ -900,7 +903,11 @@ bool isRWTexture(QualType type) {
     const auto name = rt->getDecl()->getName();
     if (name == "RWTexture1D" || name == "RWTexture1DArray" ||
         name == "RWTexture2D" || name == "RWTexture2DArray" ||
-        name == "RWTexture3D")
+        name == "RWTexture3D" || name == "RasterizerOrderedTexture1D" ||
+        name == "RasterizerOrderedTexture1DArray" ||
+        name == "RasterizerOrderedTexture2D" ||
+        name == "RasterizerOrderedTexture2DArray" ||
+        name == "RasterizerOrderedTexture3D")
       return true;
   }
   return false;
@@ -939,12 +946,18 @@ bool isSampler(QualType type) {
 
 bool isRWByteAddressBuffer(QualType type) {
   if (const auto *rt = type->getAs<RecordType>()) {
-    return rt->getDecl()->getName() == "RWByteAddressBuffer";
+    const auto name = rt->getDecl()->getName();
+    return name == "RWByteAddressBuffer" ||
+           name == "RasterizerOrderedByteAddressBuffer";
   }
   return false;
 }
 
 bool isAppendStructuredBuffer(QualType type) {
+  // Strip outer arrayness first
+  while (type->isArrayType())
+    type = type->getAsArrayTypeUnsafe()->getElementType();
+
   const auto *recordType = type->getAs<RecordType>();
   if (!recordType)
     return false;
@@ -953,6 +966,10 @@ bool isAppendStructuredBuffer(QualType type) {
 }
 
 bool isConsumeStructuredBuffer(QualType type) {
+  // Strip outer arrayness first
+  while (type->isArrayType())
+    type = type->getAsArrayTypeUnsafe()->getElementType();
+
   const auto *recordType = type->getAs<RecordType>();
   if (!recordType)
     return false;
@@ -961,18 +978,33 @@ bool isConsumeStructuredBuffer(QualType type) {
 }
 
 bool isRWStructuredBuffer(QualType type) {
+  // Strip outer arrayness first
+  while (type->isArrayType())
+    type = type->getAsArrayTypeUnsafe()->getElementType();
+
   if (const RecordType *recordType = type->getAs<RecordType>()) {
     StringRef name = recordType->getDecl()->getName();
-    return name == "RWStructuredBuffer";
+    return name == "RWStructuredBuffer" ||
+           name == "RasterizerOrderedStructuredBuffer";
   }
   return false;
 }
 
 bool isRWAppendConsumeSBuffer(QualType type) {
-  if (const RecordType *recordType = type->getAs<RecordType>()) {
-    StringRef name = recordType->getDecl()->getName();
-    return name == "RWStructuredBuffer" || name == "AppendStructuredBuffer" ||
-           name == "ConsumeStructuredBuffer";
+  return isRWStructuredBuffer(type) || isConsumeStructuredBuffer(type) ||
+         isAppendStructuredBuffer(type);
+}
+
+bool isResourceDescriptorHeap(QualType type) {
+  if (const auto *rt = type->getAs<RecordType>()) {
+    return rt->getDecl()->getName() == ".Resource";
+  }
+  return false;
+}
+
+bool isSamplerDescriptorHeap(QualType type) {
+  if (const auto *rt = type->getAs<RecordType>()) {
+    return rt->getDecl()->getName() == ".Sampler";
   }
   return false;
 }
@@ -985,19 +1017,28 @@ bool isAKindOfStructuredOrByteBuffer(QualType type) {
   if (const RecordType *recordType = type->getAs<RecordType>()) {
     StringRef name = recordType->getDecl()->getName();
     return name == "StructuredBuffer" || name == "RWStructuredBuffer" ||
+           name == "RasterizerOrderedStructuredBuffer" ||
            name == "ByteAddressBuffer" || name == "RWByteAddressBuffer" ||
+           name == "RasterizerOrderedByteAddressBuffer" ||
            name == "AppendStructuredBuffer" ||
-           name == "ConsumeStructuredBuffer";
+           name == "ConsumeStructuredBuffer" || name == ".Resource" ||
+           name == ".Sampler";
   }
   return false;
 }
 
 bool isOrContainsAKindOfStructuredOrByteBuffer(QualType type) {
+  while (type->isArrayType())
+    type = type->getAsArrayTypeUnsafe()->getElementType();
+
   if (const RecordType *recordType = type->getAs<RecordType>()) {
     StringRef name = recordType->getDecl()->getName();
     if (name == "StructuredBuffer" || name == "RWStructuredBuffer" ||
+        name == "RasterizerOrderedStructuredBuffer" ||
         name == "ByteAddressBuffer" || name == "RWByteAddressBuffer" ||
-        name == "AppendStructuredBuffer" || name == "ConsumeStructuredBuffer")
+        name == "RasterizerOrderedByteAddressBuffer" ||
+        name == "AppendStructuredBuffer" || name == "ConsumeStructuredBuffer" ||
+        name == ".Resource" || name == ".Sampler")
       return true;
 
     for (const auto *field : recordType->getDecl()->fields()) {
@@ -1020,27 +1061,33 @@ bool isOpaqueType(QualType type) {
   if (const auto *recordType = type->getAs<RecordType>()) {
     const auto name = recordType->getDecl()->getName();
 
-    if (name == "Texture1D" || name == "RWTexture1D")
+    if (name == "Texture1D" || name == "RWTexture1D" ||
+        name == "RasterizerOrderedTexture1D")
       return true;
-    if (name == "Texture2D" || name == "RWTexture2D")
+    if (name == "Texture2D" || name == "RWTexture2D" ||
+        name == "RasterizerOrderedTexture2D")
       return true;
     if (name == "Texture2DMS" || name == "RWTexture2DMS")
       return true;
-    if (name == "Texture3D" || name == "RWTexture3D")
+    if (name == "Texture3D" || name == "RWTexture3D" ||
+        name == "RasterizerOrderedTexture3D")
       return true;
     if (name == "TextureCube" || name == "RWTextureCube")
       return true;
 
-    if (name == "Texture1DArray" || name == "RWTexture1DArray")
+    if (name == "Texture1DArray" || name == "RWTexture1DArray" ||
+        name == "RasterizerOrderedTexture1DArray")
       return true;
-    if (name == "Texture2DArray" || name == "RWTexture2DArray")
+    if (name == "Texture2DArray" || name == "RWTexture2DArray" ||
+        name == "RasterizerOrderedTexture2DArray")
       return true;
     if (name == "Texture2DMSArray" || name == "RWTexture2DMSArray")
       return true;
     if (name == "TextureCubeArray" || name == "RWTextureCubeArray")
       return true;
 
-    if (name == "Buffer" || name == "RWBuffer")
+    if (name == "Buffer" || name == "RWBuffer" ||
+        name == "RasterizerOrderedBuffer")
       return true;
 
     if (name == "SamplerState" || name == "SamplerComparisonState")
@@ -1050,6 +1097,9 @@ bool isOpaqueType(QualType type) {
       return true;
 
     if (name == "RayQuery")
+      return true;
+
+    if (name == "SubpassInput")
       return true;
   }
   return false;
@@ -1066,7 +1116,9 @@ std::string getHlslResourceTypeName(QualType type) {
   if (const RecordType *recordType = type->getAs<RecordType>()) {
     StringRef name = recordType->getDecl()->getName();
     if (name == "StructuredBuffer" || name == "RWStructuredBuffer" ||
+        name == "RasterizerOrderedStructuredBuffer" ||
         name == "ByteAddressBuffer" || name == "RWByteAddressBuffer" ||
+        name == "RasterizerOrderedByteAddressBuffer" ||
         name == "AppendStructuredBuffer" || name == "ConsumeStructuredBuffer" ||
         name == "Texture1D" || name == "Texture2D" || name == "Texture3D" ||
         name == "TextureCube" || name == "Texture1DArray" ||
@@ -1074,9 +1126,16 @@ std::string getHlslResourceTypeName(QualType type) {
         name == "Texture2DMSArray" || name == "TextureCubeArray" ||
         name == "RWTexture1D" || name == "RWTexture2D" ||
         name == "RWTexture3D" || name == "RWTexture1DArray" ||
-        name == "RWTexture2DArray" || name == "Buffer" || name == "RWBuffer" ||
+        name == "RWTexture2DArray" || name == "RasterizerOrderedTexture1D" ||
+        name == "RasterizerOrderedTexture1DArray" ||
+        name == "RasterizerOrderedTexture2D" ||
+        name == "RasterizerOrderedTexture2DArray" ||
+        name == "RasterizerOrderedTexture3D" || name == "Buffer" ||
+        name == "RWBuffer" || name == "RasterizerOrderedBuffer" ||
         name == "SubpassInput" || name == "SubpassInputMS" ||
-        name == "InputPatch" || name == "OutputPatch") {
+        name == "InputPatch" || name == "OutputPatch" ||
+        name == "ConstantBuffer" || name == "TextureBuffer" ||
+        name == "RaytracingAccelerationStructure") {
       // Get resource type name with template params. Operation is safe because
       // type has already been null checked.
       return type.getLocalUnqualifiedType().getAsString();
@@ -1153,7 +1212,12 @@ bool isRelaxedPrecisionType(QualType type, const SpirvCodeGenOptions &opts) {
         name == "Texture2DMSArray" || name == "TextureCubeArray" ||
         name == "RWTexture1D" || name == "RWTexture2D" ||
         name == "RWTexture3D" || name == "RWTexture1DArray" ||
-        name == "RWTexture2DArray" || name == "Buffer" || name == "RWBuffer" ||
+        name == "RWTexture2DArray" || name == "RasterizerOrderedTexture1D" ||
+        name == "RasterizerOrderedTexture1DArray" ||
+        name == "RasterizerOrderedTexture2D" ||
+        name == "RasterizerOrderedTexture2DArray" ||
+        name == "RasterizerOrderedTexture3D" || name == "Buffer" ||
+        name == "RWBuffer" || name == "RasterizerOrderedBuffer" ||
         name == "SubpassInput" || name == "SubpassInputMS") {
       const auto sampledType = hlsl::GetHLSLResourceResultType(type);
       return isRelaxedPrecisionType(sampledType, opts);
@@ -1168,6 +1232,25 @@ bool isRelaxedPrecisionType(QualType type, const SpirvCodeGenOptions &opts) {
   if (const auto *ptrType = type->getAs<PointerType>())
     return isRelaxedPrecisionType(ptrType->getPointeeType(), opts);
 
+  return false;
+}
+
+bool isRasterizerOrderedView(QualType type) {
+  // Strip outer arrayness first
+  while (type->isArrayType())
+    type = type->getAsArrayTypeUnsafe()->getElementType();
+
+  if (const RecordType *recordType = type->getAs<RecordType>()) {
+    StringRef name = recordType->getDecl()->getName();
+    return name == "RasterizerOrderedBuffer" ||
+           name == "RasterizerOrderedByteAddressBuffer" ||
+           name == "RasterizerOrderedStructuredBuffer" ||
+           name == "RasterizerOrderedTexture1D" ||
+           name == "RasterizerOrderedTexture1DArray" ||
+           name == "RasterizerOrderedTexture2D" ||
+           name == "RasterizerOrderedTexture2DArray" ||
+           name == "RasterizerOrderedTexture3D";
+  }
   return false;
 }
 
@@ -1237,21 +1320,19 @@ bool isFloatOrVecMatOfFloatType(QualType type) {
 bool isOrContainsNonFpColMajorMatrix(const ASTContext &astContext,
                                      const SpirvCodeGenOptions &spirvOptions,
                                      QualType type, const Decl *decl) {
-  const auto isColMajorDecl = [&spirvOptions](const Decl *decl) {
-    return decl->hasAttr<clang::HLSLColumnMajorAttr>() ||
-           (!decl->hasAttr<clang::HLSLRowMajorAttr>() &&
-            !spirvOptions.defaultRowMajor);
+  const auto isColMajorDecl = [&spirvOptions](QualType matTy) {
+    return !hlsl::IsHLSLMatRowMajor(matTy, spirvOptions.defaultRowMajor);
   };
 
   QualType elemType = {};
   if (isMxNMatrix(type, &elemType) && !elemType->isFloatingType()) {
-    return isColMajorDecl(decl);
+    return isColMajorDecl(type);
   }
 
   if (const auto *arrayType = astContext.getAsConstantArrayType(type)) {
     if (isMxNMatrix(arrayType->getElementType(), &elemType) &&
         !elemType->isFloatingType())
-      return isColMajorDecl(decl);
+      return isColMajorDecl(arrayType->getElementType());
     if (const auto *structType =
             arrayType->getElementType()->getAs<RecordType>()) {
       return isOrContainsNonFpColMajorMatrix(astContext, spirvOptions,
@@ -1484,6 +1565,47 @@ bool isScalarOrNonStructAggregateOfNumericalTypes(QualType type) {
   }
 
   return false;
+}
+
+void forEachSpirvField(
+    const RecordType *recordType, const StructType *spirvType,
+    std::function<bool(size_t, const QualType &, const StructType::FieldInfo &)>
+        operation,
+    bool includeMerged) {
+  const auto *cxxDecl = recordType->getAsCXXRecordDecl();
+  const auto *recordDecl = recordType->getDecl();
+
+  // Iterate through the base class (one field per base class).
+  // Bases cannot be melded into 1 field like bitfields, simple iteration.
+  uint32_t lastConvertedIndex = 0;
+  size_t astFieldIndex = 0;
+  for (const auto &base : cxxDecl->bases()) {
+    const auto &type = base.getType();
+    const auto &spirvField = spirvType->getFields()[astFieldIndex];
+    if (!operation(spirvField.fieldIndex, type, spirvField)) {
+      return;
+    }
+    lastConvertedIndex = spirvField.fieldIndex;
+    ++astFieldIndex;
+  }
+
+  // Iterate through the derived class fields. Field could be merged.
+  for (const auto *field : recordDecl->fields()) {
+    const auto &spirvField = spirvType->getFields()[astFieldIndex];
+    const uint32_t currentFieldIndex = spirvField.fieldIndex;
+    if (!includeMerged && astFieldIndex > 0 &&
+        currentFieldIndex == lastConvertedIndex) {
+      ++astFieldIndex;
+      continue;
+    }
+
+    const auto &type = field->getType();
+    if (!operation(currentFieldIndex, type, spirvField)) {
+      return;
+    }
+    lastConvertedIndex = currentFieldIndex;
+    ++astFieldIndex;
+  }
 }
 
 } // namespace spirv

@@ -3403,7 +3403,7 @@ BuildImplicitBaseInitializer(Sema &SemaRef, CXXConstructorDecl *Constructor,
       break;
     }
   }
-  // Fall through.
+  LLVM_FALLTHROUGH; // HLSL Change
   case IIK_Default: {
     InitializationKind InitKind
       = InitializationKind::CreateDefault(Constructor->getLocation());
@@ -7022,7 +7022,7 @@ void Sema::CheckConversionDeclarator(Declarator &D, QualType &R,
           PastFunctionChunk = true;
           break;
         }
-        // Fall through.
+        LLVM_FALLTHROUGH; // HLSL Change
       case DeclaratorChunk::Array:
         NeedsTypedef = true;
         extendRight(After, Chunk.getSourceRange());
@@ -11318,7 +11318,7 @@ static bool hasOneRealArgument(MultiExprArg Args) {
     if (!Args[1]->isDefaultArgument())
       return false;
     
-    // fall through
+    LLVM_FALLTHROUGH; // HLSL Change
   case 1:
     return !Args[0]->isDefaultArgument();
   }
@@ -11644,9 +11644,13 @@ bool Sema::CheckOverloadedOperatorDeclaration(FunctionDecl *FnDecl) {
         Op == OO_PlusPlus || Op == OO_MinusMinus || Op == OO_ArrowStar ||
         Op == OO_Arrow) {
       return Diag(FnDecl->getLocation(),
-                  diag::err_hlsl_overloading_new_delete_operator)
-             << FnDecl->getDeclName();
+                  diag::err_hlsl_overloading_operator_disallowed)
+             << FnDecl->getDeclName() << 0;
     }
+    if (!isa<CXXMethodDecl>(FnDecl))
+      return Diag(FnDecl->getLocation(),
+                  diag::err_hlsl_overloading_operator_disallowed)
+             << FnDecl->getDeclName() << 1;
   }
   // HLSL Change Ends
 
@@ -13598,6 +13602,7 @@ bool Sema::checkThisInStaticMemberFunctionExceptionSpec(CXXMethodDecl *Method) {
   case EST_ComputedNoexcept:
     if (!Finder.TraverseStmt(Proto->getNoexceptExpr()))
       return true;
+      LLVM_FALLTHROUGH; // HLSL Change
     
   case EST_Dynamic:
     for (const auto &E : Proto->exceptions()) {

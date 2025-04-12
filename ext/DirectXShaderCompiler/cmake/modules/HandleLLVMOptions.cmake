@@ -78,6 +78,18 @@ if( LLVM_ENABLE_ASSERTIONS )
         "${flags_var_to_scrub}" "${${flags_var_to_scrub}}")
     endforeach()
   endif()
+
+  if (LLVM_ASSERTIONS_TRAP)
+    add_definitions( -DLLVM_ASSERTIONS_TRAP )
+  endif()
+  if (LLVM_ASSERTIONS_NO_STRINGS)
+    add_definitions( -DLLVM_ASSERTIONS_NO_STRINGS )
+  endif()
+else()
+  # Disable assertions in Debug builds
+  if( uppercase_CMAKE_BUILD_TYPE STREQUAL "DEBUG" )
+    add_definitions( -DNDEBUG )
+  endif()
 endif()
 
 string(TOUPPER "${LLVM_ABI_BREAKING_CHECKS}" uppercase_LLVM_ABI_BREAKING_CHECKS)
@@ -190,12 +202,13 @@ if( LLVM_ENABLE_PIC )
     # Xcode has -mdynamic-no-pic on by default, which overrides -fPIC. I don't
     # know how to disable this, so just force ENABLE_PIC off for now.
     message(WARNING "-fPIC not supported with Xcode.")
-  elseif( WIN32 OR CYGWIN)
-    # On Windows all code is PIC. MinGW warns if -fPIC is used.
   else()
-    add_flag_or_print_warning("-fPIC" FPIC)
+    if( NOT WIN32 AND NOT CYGWIN )
+      # On Windows all code is PIC. MinGW warns if -fPIC is used.
+      add_flag_or_print_warning("-fPIC" FPIC)
+    endif()
 
-    if( WIN32 OR CYGWIN)
+    if( (MINGW AND NOT CLANG) OR CYGWIN )
       # MinGW warns if -fvisibility-inlines-hidden is used.
     else()
       check_cxx_compiler_flag("-fvisibility-inlines-hidden" SUPPORTS_FVISIBILITY_INLINES_HIDDEN_FLAG)
@@ -344,9 +357,11 @@ if( MSVC )
 
   # Change release to always build debug information out-of-line, but
   # also enable Reference optimization, ie dead function elimination.
-  append("/Zi" CMAKE_CXX_FLAGS_RELEASE)
-  append("/DEBUG /OPT:REF" CMAKE_SHARED_LINKER_FLAGS_RELEASE)
-  append("/DEBUG /OPT:REF" CMAKE_EXE_LINKER_FLAGS_RELEASE)
+  if (NOT CMAKE_MSVC_DEBUG_INFORMATION_FORMAT)
+    append("/Zi" CMAKE_CXX_FLAGS_RELEASE)
+    append("/DEBUG /OPT:REF" CMAKE_SHARED_LINKER_FLAGS_RELEASE)
+    append("/DEBUG /OPT:REF" CMAKE_EXE_LINKER_FLAGS_RELEASE)
+  endif()
 
   # HLSL Changes End
 
@@ -363,6 +378,23 @@ if( MSVC )
     if (LLVM_ENABLE_PEDANTIC)
       # No MSVC equivalent available
     endif (LLVM_ENABLE_PEDANTIC)
+
+    if (CLANG_CL)
+      append("-Wall -W -Wno-unused-parameter -Wwrite-strings -Wimplicit-fallthrough" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+      append("-Wcast-qual" CMAKE_CXX_FLAGS)
+
+      # Disable unknown pragma warnings because the output is just too long with them.
+      append("-Wno-unknown-pragmas" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+
+      add_flag_if_supported("-Wno-unused-but-set-variable" UNUSED_BUT_SET_VARIABLE)
+      append("-Wno-switch" CMAKE_CXX_FLAGS)
+
+      append("-Wmissing-field-initializers" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+
+      # enable warnings explicitly.
+      append("-Wnonportable-include-path -Wunused-function" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+      append("-Wtrigraphs -Wconstant-logical-operand -Wunused-variable" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+    endif (CLANG_CL)
   endif (LLVM_ENABLE_WARNINGS)
   if (LLVM_ENABLE_WERROR)
     append("/WX" msvc_warning_flags)
@@ -379,11 +411,20 @@ if( MSVC )
 
 elseif( LLVM_COMPILER_IS_GCC_COMPATIBLE )
   if (LLVM_ENABLE_WARNINGS)
-    append("-Wall -W -Wno-unused-parameter -Wwrite-strings" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+    append("-Wall -W -Wno-unused-parameter -Wwrite-strings -Wimplicit-fallthrough" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
     append("-Wcast-qual" CMAKE_CXX_FLAGS)
 
     # Disable unknown pragma warnings because the output is just too long with them.
     append("-Wno-unknown-pragmas" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+
+    if (MINGW)
+      append("-Wno-implicit-fallthrough" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+      append("-Wno-missing-exception-spec" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+      append("-Wno-reorder-ctor" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+      append("-Wno-sign-compare" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+      append("-Wno-unused-const-variable" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+      append("-Wno-unused-function" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+    endif()
 
     add_flag_if_supported("-Wno-unused-but-set-variable" UNUSED_BUT_SET_VARIABLE)
     add_flag_if_supported("-Wno-deprecated-copy" DEPRECATED_COPY)
@@ -391,7 +432,6 @@ elseif( LLVM_COMPILER_IS_GCC_COMPATIBLE )
     # Colorize GCC output even with ninja's stdout redirection.
     if (CMAKE_COMPILER_IS_GNUCXX)
        append("-fdiagnostics-color" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
-       append("-std=c++11" CMAKE_CXX_FLAGS)
     endif (CMAKE_COMPILER_IS_GNUCXX)
 
     # Turn off missing field initializer warnings for gcc to avoid noise from
@@ -453,23 +493,7 @@ elseif( LLVM_COMPILER_IS_GCC_COMPATIBLE )
   if (NOT LLVM_ENABLE_TIMESTAMPS)
     add_flag_if_supported("-Werror=date-time" WERROR_DATE_TIME)
   endif ()
-  if (LLVM_ENABLE_CXX1Y)
-    check_cxx_compiler_flag("-std=c++1y" CXX_SUPPORTS_CXX1Y)
-    append_if(CXX_SUPPORTS_CXX1Y "-std=c++1y" CMAKE_CXX_FLAGS)
-  else()
-    check_cxx_compiler_flag("-std=c++14" CXX_SUPPORTS_CXX14)
-    if (CXX_SUPPORTS_CXX14)
-      if (CYGWIN OR MINGW)
-        # MinGW and Cygwin are a bit stricter and lack things like
-        # 'strdup', 'stricmp', etc in c++11 mode.
-        append("-std=gnu++14" CMAKE_CXX_FLAGS)
-      else()
-        append("-std=c++14" CMAKE_CXX_FLAGS)
-      endif()
-    else()
-      message(FATAL_ERROR "LLVM requires C++11 support but the '-std=c++14' flag isn't supported.")
-    endif()
-  endif()
+
   if (LLVM_ENABLE_MODULES)
     set(OLD_CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS})
     set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} -fmodules -fcxx-modules")
@@ -519,7 +543,7 @@ if(LLVM_USE_SANITIZER)
       endif()
     elseif (LLVM_USE_SANITIZER STREQUAL "Undefined")
       append_common_sanitizer_flags()
-      append("-fsanitize=undefined -fno-sanitize=vptr,function -fno-sanitize-recover=all"
+      append("-fsanitize=undefined -fno-sanitize=vptr,function,alignment -fno-sanitize-recover=all"
               CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
     elseif (LLVM_USE_SANITIZER STREQUAL "Thread")
       append_common_sanitizer_flags()
@@ -527,13 +551,17 @@ if(LLVM_USE_SANITIZER)
     elseif (LLVM_USE_SANITIZER STREQUAL "Address;Undefined" OR
             LLVM_USE_SANITIZER STREQUAL "Undefined;Address")
       append_common_sanitizer_flags()
-      append("-fsanitize=address,undefined -fno-sanitize=vptr,function -fno-sanitize-recover=all"
+      append("-fsanitize=address,undefined -fno-sanitize=vptr,function,alignment -fno-sanitize-recover=all"
               CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
     else()
-      message(WARNING "Unsupported value of LLVM_USE_SANITIZER: ${LLVM_USE_SANITIZER}")
+      message(FATAL_ERROR "Unsupported value of LLVM_USE_SANITIZER: ${LLVM_USE_SANITIZER}")
     endif()
   else()
-    message(WARNING "LLVM_USE_SANITIZER is not supported on this platform.")
+    if (LLVM_USE_SANITIZER STREQUAL "Address")
+      append("-fsanitize=address" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
+    else()
+      message(FATAL_ERROR "Unsupported value of LLVM_USE_SANITIZER: ${LLVM_USE_SANITIZER}")
+    endif()
   endif()
   if (LLVM_USE_SANITIZE_COVERAGE)
     append("-fsanitize-coverage=edge,indirect-calls,8bit-counters,trace-cmp" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
@@ -551,14 +579,14 @@ add_llvm_definitions( -D__STDC_LIMIT_MACROS )
 
 # clang doesn't print colored diagnostics when invoked from Ninja
 if (UNIX AND
-    CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND
+    CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND # HLSL Change - Update to CMake 3.13.4
     CMAKE_GENERATOR STREQUAL "Ninja")
   append("-fcolor-diagnostics" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
 endif()
 
 # HLSL Change Starts
 # Enable -fms-extensions for clang to use MS uuid extensions for COM.
-if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   append("-fms-extensions -Wno-language-extension-token" CMAKE_C_FLAGS CMAKE_CXX_FLAGS)
 endif()
 # HLSL Change Ends
@@ -605,6 +633,15 @@ if(LLVM_ENABLE_EH AND NOT LLVM_ENABLE_RTTI)
   message(FATAL_ERROR "Exception handling requires RTTI. You must set LLVM_ENABLE_RTTI to ON")
 endif()
 
+if (MINGW)
+  if (LLVM_ENABLE_EH)
+    append("-fexceptions" CMAKE_CXX_FLAGS)
+  endif()
+  if (LLVM_ENABLE_RTTI)
+    append("-frtti" CMAKE_CXX_FLAGS)
+  endif()
+endif()
+
 # HLSL Change Begin
 option(LLVM_ENABLE_LTO "Enable building with LTO" ${HLSL_OFFICIAL_BUILD})
 if (LLVM_ENABLE_LTO)
@@ -615,10 +652,26 @@ if (LLVM_ENABLE_LTO)
     append("/GL" CMAKE_C_FLAGS${_SUFFIX} CMAKE_CXX_FLAGS${_SUFFIX})
     append("/LTCG" CMAKE_MODULE_LINKER_FLAGS${_SUFFIX} CMAKE_MODULE_LINKER_FLAGS${_SUFFIX} CMAKE_EXE_LINKER_FLAGS${_SUFFIX})
   else()
-    add_flag_if_supported("-flto" SUPPORST_FLTO)
+    add_flag_if_supported("-flto" SUPPORTS_FLTO)
   endif()
 endif()
 # HLSL Change End
+
+option(LLVM_BUILD_INSTRUMENTED "Build LLVM and tools with PGO instrumentation (experimental)" Off)
+mark_as_advanced(LLVM_BUILD_INSTRUMENTED)
+append_if(LLVM_BUILD_INSTRUMENTED "-fprofile-instr-generate='${LLVM_PROFILE_FILE_PATTERN}'"
+  CMAKE_CXX_FLAGS
+  CMAKE_C_FLAGS
+  CMAKE_EXE_LINKER_FLAGS
+  CMAKE_SHARED_LINKER_FLAGS)
+
+option(LLVM_BUILD_INSTRUMENTED_COVERAGE "Build LLVM and tools with Code Coverage instrumentation (experimental)" Off)
+mark_as_advanced(LLVM_BUILD_INSTRUMENTED_COVERAGE)
+append_if(LLVM_BUILD_INSTRUMENTED_COVERAGE "-fprofile-instr-generate='${LLVM_PROFILE_FILE_PATTERN}' -fcoverage-mapping"
+  CMAKE_CXX_FLAGS
+  CMAKE_C_FLAGS
+  CMAKE_EXE_LINKER_FLAGS
+  CMAKE_SHARED_LINKER_FLAGS)
 
 # Plugin support
 # FIXME: Make this configurable.

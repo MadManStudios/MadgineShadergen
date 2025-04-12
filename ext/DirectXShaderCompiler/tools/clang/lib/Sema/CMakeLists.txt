@@ -41,6 +41,7 @@ add_clang_library(clangSema
   SemaExprObjC.cpp
   SemaFixItUtils.cpp
   SemaHLSL.cpp # HLSL Change
+  SemaHLSLDiagnoseTU.cpp # HLSL Change
   SemaInit.cpp
   SemaLambda.cpp
   SemaLookup.cpp
@@ -66,3 +67,15 @@ add_clang_library(clangSema
   clangEdit
   clangLex
   )
+
+# HLSL Change Begin
+# Sema got too big for debug builds on arm64ec, which means it will hit
+# other targets too eventually.
+if(WIN32)
+  if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj")
+  endif()
+endif(WIN32)
+# HLSL Change End

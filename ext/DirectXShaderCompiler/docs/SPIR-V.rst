@@ -213,8 +213,10 @@ For example:
 
   [[vk::input_attachment_index(i)]] SubpassInput input;
 
-An ``vk::input_attachment_index`` of ``i`` selects the ith entry in the input
-pass list. (See Vulkan API spec for more information.)
+A ``vk::input_attachment_index`` of ``i`` selects the ith entry in the input
+pass list. A subpass input without a ``vk::input_attachment_index`` will be
+associated with the depth/stencil attachment. (See Vulkan API spec for more
+information.)
 
 Push constants
 ~~~~~~~~~~~~~~
@@ -252,7 +254,7 @@ more than one shader_record_nv block statically used per shader entry point
 otherwise results are undefined."
 
 The official Khronos ray tracing extension also comes with a SPIR-V storage class
-that has the same functionality. The ``[[vk::shader_record_ext]]`` annotation can 
+that has the same functionality. The ``[[vk::shader_record_ext]]`` annotation can
 be used when targeting the SPV_KHR_ray_tracing extension.
 
 Builtin variables
@@ -291,15 +293,32 @@ Supported extensions
 * SPV_KHR_fragment_shading_rate
 * SPV_KHR_multivew
 * SPV_KHR_post_depth_coverage
+* SPV_KHR_non_semantic_info
 * SPV_KHR_shader_draw_parameters
+* SPV_KHR_ray_tracing
+* SPV_KHR_shader_clock
+* SPV_EXT_demote_to_helper_invocation
 * SPV_EXT_descriptor_indexing
 * SPV_EXT_fragment_fully_covered
+* SPV_EXT_fragment_invocation_density
+* SPV_EXT_fragment_shader_interlock
+* SPV_EXT_mesh_shader
 * SPV_EXT_shader_stencil_support
+* SPV_EXT_shader_viewport_index_layer
 * SPV_AMD_shader_early_and_late_fragment_tests
-* SPV_AMD_shader_explicit_vertex_parameter
 * SPV_GOOGLE_hlsl_functionality1
 * SPV_GOOGLE_user_type
+* SPV_NV_ray_tracing
 * SPV_NV_mesh_shader
+* SPV_KHR_ray_query
+* SPV_EXT_shader_image_int64
+* SPV_KHR_fragment_shading_barycentric
+* SPV_KHR_physical_storage_buffer
+* SPV_KHR_vulkan_memory_model
+* SPV_NV_compute_shader_derivatives
+* SPV_KHR_maximal_reconvergence
+* SPV_KHR_float_controls
+* SPV_NV_shader_subgroup_partitioned
 
 Vulkan specific attributes
 --------------------------
@@ -394,8 +413,8 @@ interface variables:
   main([[vk::location(N)]] float4 input: A) : B
   { ... }
 
-Macro for SPIR-V
-----------------
+Macros for SPIR-V
+-----------------
 
 If SPIR-V CodeGen is enabled and ``-spirv`` flag is used as one of the command
 line options (meaning that "generates SPIR-V code"), it defines an implicit
@@ -408,6 +427,12 @@ specific part of the HLSL code:
   [[vk::binding(X, Y), vk::counter_binding(Z)]]
   #endif
   RWStructuredBuffer<S> mySBuffer;
+
+When the ``-spirv`` flag is used, the ``-fspv-target-env`` option will
+implicitly define the macros ``__SPIRV_MAJOR_VERSION__`` and
+``__SPIRV_MINOR_VERSION__``, which will be integers representing the major and
+minor version of the SPIR-V being generated. This can be used to enable code that uses a feature
+only for environments where that feature is available.
 
 SPIR-V version and extension
 ----------------------------
@@ -579,10 +604,15 @@ information, you can use ``-fspv-debug=``. It accepts:
 * ``line``: for emitting line information (turns on ``source`` implicitly)
 * ``tool``: for emitting DXC Git commit hash and command-line options
 
-``-fspv-debug=`` overrules ``-Zi``. And you can provide multiple instances of
-``-fspv-debug=``. For example, you can use ``-fspv-debug=file -fspv-debug=tool``
-to turn on emitting file path and DXC information; source code and line
-information will not be emitted.
+These ``-fspv-debug=`` options overrule ``-Zi``. And you can provide multiple
+instances of ``-fspv-debug=``. For example, you can use ``-fspv-debug=file
+-fspv-debug=tool`` to turn on emitting file path and DXC information; source
+code and line information will not be emitted.
+
+If you want to generate `NonSemantic.Shader.DebugInfo.100 <http://htmlpreview.github.io/?https://github.com/KhronosGroup/SPIRV-Registry/blob/main/nonsemantic/NonSemantic.Shader.DebugInfo.100.html>`_ extended instructions, you can use
+``-fspv-debug=vulkan-with-source``. These instructions support source-level
+shader debugging with tools such as RenderDoc, even if the SPIR-V is optimized.
+This option overrules the other ``-fspv-debug`` options above.
 
 Reflection
 ----------
@@ -665,21 +695,21 @@ Normal scalar types
 in HLSL are relatively easy to handle and can be mapped directly to SPIR-V
 type instructions:
 
-============================== ======================= ================== =========== =================================
-      HLSL                      Command Line Option           SPIR-V       Capability       Extension
-============================== ======================= ================== =========== =================================
+============================== ======================= ================== ===========
+      HLSL                      Command Line Option           SPIR-V       Capability
+============================== ======================= ================== ===========
 ``bool``                                               ``OpTypeBool``
 ``int``/``int32_t``                                    ``OpTypeInt 32 1``
 ``int16_t``                    ``-enable-16bit-types`` ``OpTypeInt 16 1`` ``Int16``
 ``uint``/``dword``/``uin32_t``                         ``OpTypeInt 32 0``
 ``uint16_t``                   ``-enable-16bit-types`` ``OpTypeInt 16 0`` ``Int16``
 ``half``                                               ``OpTypeFloat 32``
-``half``/``float16_t``         ``-enable-16bit-types`` ``OpTypeFloat 16``             ``SPV_AMD_gpu_shader_half_float``
+``half``/``float16_t``         ``-enable-16bit-types`` ``OpTypeFloat 16`` ``Float16``
 ``float``/``float32_t``                                ``OpTypeFloat 32``
 ``snorm float``                                        ``OpTypeFloat 32``
 ``unorm float``                                        ``OpTypeFloat 32``
 ``double``/``float64_t``                               ``OpTypeFloat 64`` ``Float64``
-============================== ======================= ================== =========== =================================
+============================== ======================= ================== ===========
 
 Please note that ``half`` is translated into 32-bit floating point numbers
 if without ``-enable-16bit-types`` because MSDN says that "this data type
@@ -699,20 +729,20 @@ We use the 16-bit variants if '-enable-16bit-types' command line option is prese
 For more information on these types, please refer to:
 https://github.com/Microsoft/DirectXShaderCompiler/wiki/16-Bit-Scalar-Types
 
-============== ======================= ================== ==================== ============ =================================
-    HLSL        Command Line Option          SPIR-V            Decoration       Capability        Extension
-============== ======================= ================== ==================== ============ =================================
+============== ======================= ================== ==================== ============
+    HLSL        Command Line Option          SPIR-V            Decoration       Capability 
+============== ======================= ================== ==================== ============
 ``min16float``                         ``OpTypeFloat 32`` ``RelaxedPrecision``
 ``min10float``                         ``OpTypeFloat 32`` ``RelaxedPrecision``
 ``min16int``                           ``OpTypeInt 32 1`` ``RelaxedPrecision``
 ``min12int``                           ``OpTypeInt 32 1`` ``RelaxedPrecision``
 ``min16uint``                          ``OpTypeInt 32 0`` ``RelaxedPrecision``
-``min16float`` ``-enable-16bit-types`` ``OpTypeFloat 16``                                   ``SPV_AMD_gpu_shader_half_float``
-``min10float`` ``-enable-16bit-types`` ``OpTypeFloat 16``                                   ``SPV_AMD_gpu_shader_half_float``
+``min16float`` ``-enable-16bit-types`` ``OpTypeFloat 16``                      ``Float16`` 
+``min10float`` ``-enable-16bit-types`` ``OpTypeFloat 16``                      ``Float16`` 
 ``min16int``   ``-enable-16bit-types`` ``OpTypeInt 16 1``                      ``Int16``
 ``min12int``   ``-enable-16bit-types`` ``OpTypeInt 16 1``                      ``Int16``
 ``min16uint``  ``-enable-16bit-types`` ``OpTypeInt 16 0``                      ``Int16``
-============== ======================= ================== ==================== ============ =================================
+============== ======================= ================== ==================== ============
 
 Vectors and matrices
 --------------------
@@ -850,7 +880,7 @@ are translated into SPIR-V ``OpTypeImage``, with parameters:
 ``Texture1DArray``      Sampled Image         RO   ``UniformConstant`` ``1D``      2       1    0    1     ``Unknown``
 ``Texture2DArray``      Sampled Image         RO   ``UniformConstant`` ``2D``      2       1    0    1     ``Unknown``
 ``Texture2DMS``         Sampled Image         RO   ``UniformConstant`` ``2D``      2       0    1    1     ``Unknown``
-``Texture2DMSArray``    Sampled Image         RO   ``UniformConstant`` ``2D``      2       1    1    1     ``Unknown``      ``ImageMSArray``
+``Texture2DMSArray``    Sampled Image         RO   ``UniformConstant`` ``2D``      2       1    1    1     ``Unknown``
 ``TextureCubeArray``    Sampled Image         RO   ``UniformConstant`` ``3D``      2       1    0    1     ``Unknown``
 ``Buffer<T>``           Uniform Texel Buffer  RO   ``UniformConstant`` ``Buffer``  2       0    0    1     Depends on ``T`` ``SampledBuffer``
 ``RWBuffer<T>``         Storage Texel Buffer  RW   ``UniformConstant`` ``Buffer``  2       0    0    2     Depends on ``T`` ``SampledBuffer``
@@ -872,6 +902,7 @@ SPIR-V, we introduce ``[[vk::image_format("FORMAT")]]`` attribute for texture ty
 For example,
 
 .. code:: hlsl
+
   [[vk::image_format("rgba8")]]
   RWBuffer<float4> Buf;
 
@@ -1272,6 +1303,39 @@ will be translated into
   %myBuffer1 = OpVariable %_ptr_Uniform_type_ByteAddressBuffer Uniform
   %myBuffer2 = OpVariable %_ptr_Uniform_type_RWByteAddressBuffer Uniform
 
+Rasterizer Ordered Views
+------------------------
+
+The following types are rasterizer ordered views:
+
+* ``RasterizerOrderedBuffer``
+* ``RasterizerOrderedByteAddressBuffer``
+* ``RasterizerOrderedStructuredBuffer``
+* ``RasterizerOrderedTexture1D``
+* ``RasterizerOrderedTexture1DArray``
+* ``RasterizerOrderedTexture2D``
+* ``RasterizerOrderedTexture2DArray``
+* ``RasterizerOrderedTexture3D``
+
+These are translated to the same types as their equivalent RW* types - for
+example, a ``RasterizerOrderedBuffer`` is translated to the same SPIR-V type as
+an ``RWBuffer``. The sole difference lies in how loads and stores to these
+values are treated.
+
+The access order guarantee made by ROVs is implemented in SPIR-V using the
+`SPV_EXT_fragment_shader_interlock <https://github.com/KhronosGroup/SPIRV-Registry/blob/main/extensions/EXT/SPV_EXT_fragment_shader_interlock.asciidoc>`_.
+When you load or store a value from or to a rasterizer ordered view, using
+either the ``Load*()`` or ``Store*()`` methods or the indexing operator,
+``OpBeginInvocationInterlockEXT`` will be inserted before the first access and
+``OpEndInvocationInterlockEXT`` will be inserted after the last access.
+
+An execution mode will be added to the entry point, depending on the sample
+frequency, which will be deduced based on the semantics inputted by the entry
+point. ``PixelInterlockOrderedEXT`` will be selected by default,
+``SampleInterlockOrderedEXT`` will be selected if the ``SV_SampleIndex``
+semantic is input, and ``ShadingRateInterlockOrderedEXT`` will be selected if
+the ``SV_ShadingRate`` semantic is input.
+
 HLSL Variables and Resources
 ============================
 
@@ -1319,7 +1383,7 @@ placed in the ``Uniform`` or ``UniformConstant`` storage class.
   - Note that this modifier overrules ``static``; if both ``groupshared`` and
     ``static`` are applied to a variable, ``static`` will be ignored.
 
-- ``uinform``
+- ``uniform``
 
   - This does not affect codegen. Variables will be treated like normal global
     variables.
@@ -1477,6 +1541,10 @@ some system-value (SV) semantic strings will be translated into SPIR-V
 |                           |             | with                                   |                       |                             |
 |                           |             | ``-fvk-support-nonzero-base-instance`` |                       |                             |
 +---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
+| SV_StartVertexLocation    | VSIn        | ``BaseVertex``                         | N/A                   | ``Shader``                  |
++---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
+| SV_StartInstanceLocation  | VSIn        | ``BaseInstance``                       | N/A                   | ``Shader``                  |
++---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
 | SV_Depth                  | PSOut       | ``FragDepth``                          | N/A                   | ``Shader``                  |
 +---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
 | SV_DepthGreaterEqual      | PSOut       | ``FragDepth``                          | ``DepthGreater``      | ``Shader``                  |
@@ -1521,13 +1589,15 @@ some system-value (SV) semantic strings will be translated into SPIR-V
 |                           +-------------+----------------------------------------+-----------------------+-----------------------------+
 |                           | DsIn        | ``PrimitiveId``                        | N/A                   | ``Tessellation``            |
 |                           +-------------+----------------------------------------+-----------------------+-----------------------------+
-| SV_PrimitiveID            | GSIn        | ``PrimitiveId``                        | N/A                   | ``Geometry``                |
-|                           +-------------+----------------------------------------+-----------------------+-----------------------------+
+|                           | GSIn        | ``PrimitiveId``                        | N/A                   | ``Geometry``                |
+| SV_PrimitiveID            +-------------+----------------------------------------+-----------------------+-----------------------------+
 |                           | GSOut       | ``PrimitiveId``                        | N/A                   | ``Geometry``                |
 |                           +-------------+----------------------------------------+-----------------------+-----------------------------+
 |                           | PSIn        | ``PrimitiveId``                        | N/A                   | ``Geometry``                |
 |                           +-------------+----------------------------------------+-----------------------+-----------------------------+
-|                           | MSOut       | ``PrimitiveId``                        | N/A                   | ``MeshShadingNV``           |
+|                           |             |                                        |                       | ``MeshShadingNV``           |
+|                           | MSOut       | ``PrimitiveId``                        | N/A                   |                             |
+|                           |             |                                        |                       | ``MeshShadingEXT``          |
 +---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
 |                           | PCOut       | ``TessLevelOuter``                     | N/A                   | ``Tessellation``            |
 | SV_TessFactor             +-------------+----------------------------------------+-----------------------+-----------------------------+
@@ -1541,19 +1611,23 @@ some system-value (SV) semantic strings will be translated into SPIR-V
 +---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
 | SV_StencilRef             | PSOut       | ``FragStencilRefEXT``                  | N/A                   | ``StencilExportEXT``        |
 +---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
-| SV_Barycentrics           | PSIn        | ``BaryCoord*AMD``                      | N/A                   | ``Shader``                  |
+| SV_Barycentrics           | PSIn        | ``BaryCoord*KHR``                      | N/A                   | ``FragmentBarycentricKHR``  |
 +---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
 |                           | GSOut       | ``Layer``                              | N/A                   | ``Geometry``                |
 |                           +-------------+----------------------------------------+-----------------------+-----------------------------+
-| SV_RenderTargetArrayIndex | PSIn        | ``Layer``                              | N/A                   | ``Geometry``                |
-|                           +-------------+----------------------------------------+-----------------------+-----------------------------+
-|                           | MSOut       | ``Layer``                              | N/A                   | ``MeshShadingNV``           |
+|                           | PSIn        | ``Layer``                              | N/A                   | ``Geometry``                |
+| SV_RenderTargetArrayIndex +-------------+----------------------------------------+-----------------------+-----------------------------+
+|                           |             |                                        |                       | ``MeshShadingNV``           |
+|                           | MSOut       | ``Layer``                              | N/A                   |                             |
+|                           |             |                                        |                       | ``MeshShadingEXT``          |
 +---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
 |                           | GSOut       | ``ViewportIndex``                      | N/A                   | ``MultiViewport``           |
 |                           +-------------+----------------------------------------+-----------------------+-----------------------------+
-| SV_ViewportArrayIndex     | PSIn        | ``ViewportIndex``                      | N/A                   | ``MultiViewport``           |
-|                           +-------------+----------------------------------------+-----------------------+-----------------------------+
-|                           | MSOut       | ``ViewportIndex``                      | N/A                   | ``MeshShadingNV``           |
+|                           | PSIn        | ``ViewportIndex``                      | N/A                   | ``MultiViewport``           |
+| SV_ViewportArrayIndex     +-------------+----------------------------------------+-----------------------+-----------------------------+
+|                           |             |                                        |                       | ``MeshShadingNV``           |
+|                           | MSOut       | ``ViewportIndex``                      | N/A                   |                             |
+|                           |             |                                        |                       | ``MeshShadingEXT``          |
 +---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
 |                           | PSIn        | ``SampleMask``                         | N/A                   | ``Shader``                  |
 | SV_Coverage               +-------------+----------------------------------------+-----------------------+-----------------------------+
@@ -1581,6 +1655,9 @@ some system-value (SV) semantic strings will be translated into SPIR-V
 |                           +-------------+----------------------------------------+-----------------------+-----------------------------+
 |                           | MSOut       | ``PrimitiveShadingRateKHR``            | N/A                   | ``FragmentShadingRate``     |
 +---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
+| SV_CullPrimitive          | MSOut       | ``CullPrimitiveEXT``                   | N/A                   | ``MeshShadingEXT ``         |
++---------------------------+-------------+----------------------------------------+-----------------------+-----------------------------+
+
 
 For entities (function parameters, function return values, struct fields) with
 the above SV semantic strings attached, SPIR-V variables of the
@@ -1670,6 +1747,22 @@ attached to a RW/append/consume structured buffers to specify the binding number
 for the associated counter to ``Z``. Note that the set number of the counter is
 always the same as the main buffer.
 
+.. warning::
+   When a RW/append/consume structured buffer is accessed through a resource
+   heap, its associated counter is in its own binding, but shares the same
+   index in the binding as its associated resource.
+
+   Example:
+    - ResourceDescriptorHeap -> binding 0, set 0
+    - No other resources are used.
+
+    - RWStructuredBuffer buff = ResourceDescriptorHeap[3]
+    - buff.IncrementCounter()
+
+    - buff will be at index 3 of the array at binding 0, set 0.
+      buff.counter will be at index 3 of the array at binding 1, set 0
+
+
 Implicit binding number assignment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1755,6 +1848,7 @@ variable with the struct type.
 For example, the binding numbers for the following resources and cbuffers
 
 .. code:: hlsl
+
   cbuffer buf0 : register(b0) {
     float4 non_resource0;
   };
@@ -1870,6 +1964,81 @@ Example 3: (compiled with ``-fvk-bind-globals 2 1``)
 
 Note that if the developer chooses to use this command line option, it is their
 responsibility to provide proper numbers and avoid binding overlaps.
+
+ResourceDescriptorHeaps & SamplerDescriptorHeaps
+------------------------------------------------
+
+The SPIR-V backend supported SM6.6 resource heaps, using 2 extensions:
+- `SPV_EXT_descriptor_indexing`
+- `VK_EXT_mutable_descriptor_type`
+
+Each type loaded from a heap is considered to be an unbounded RuntimeArray
+bound to the descriptor set 0.
+
+Each heap uses at most 1 binding in that set. Meaning if 2 types are loaded
+from the same heap, DXC will generate 2 RuntimeArray, one for each type, and
+will bind them to the same binding/set.
+(This requires `VK_EXT_mutable_descriptor_type`).
+
+For resources with counters, like RW/Append/Consume structured buffers,
+DXC generates another RuntimeArray of counters, and binds it to a new
+binding in the set 0.
+
+This means Resource/Sampler heaps can use at most 3 bindings:
+    - 1 for all RuntimeArrays associated with the ResourceDescriptorHeap.
+    - 1 for all RuntimeArrays associated with the SamplerDescriptorHeaps.
+    - 1 for UAV counters.
+
+The index of a counter in the counters RuntimeArray matches the index of the
+associated ResourceDescriptorHeap RuntimeArray.
+
+The selection of the binding indices for those RuntimeArrays is done once all
+other resources are bound to their respective bindings/sets.
+DXC takes the first 3 unused bindings in the set 0, and distributes them in
+that order:
+    1. Resource heap.
+    2. Sampler heap.
+    3. Resouce heap counters.
+
+Bindings are lazily allocated: if only the sampler heap is used,
+1 binding will be used.
+
+.. code:: hlsl
+   Texture2D tex = ResourceDescriptorHeap[10];
+   // tex is in the descriptor set 0, binding 0.
+
+.. code:: hlsl
+   [[vk::binding(0, 0)]]
+   Texture2D Texture;
+   // Texture is using set=0, binding=0
+
+   Texture2D tex = ResourceDescriptorHeap[0];
+   // tex is in the descriptor set 0, binding 1.
+
+.. code:: hlsl
+   [[vk::binding(0, 0)]]
+   RWStructuredBuffer<int> buffer;
+   // Texture is using set=0, binding=0
+
+   RWStructuredBuffer<int> tmp = ResourceDescriptorHeap[0];
+   tmp.IncrementCounter();
+   // tmp is in the descriptor set 0, binding 1.
+   // tmp.counter is in the descriptor set 0, binding 2
+
+.. code:: hlsl
+   [[vk::binding(1, 0)]]
+   RWStructuredBuffer<int> buffer;
+   // Texture is using set=0, binding=1
+
+   RWStructuredBuffer<int> tmp = ResourceDescriptorHeap[0];
+   tmp.IncrementCounter();
+   // tmp is in the descriptor set 0, binding 0.
+   // tmp.counter is in the descriptor set 0, binding 2
+
+.. code:: hlsl
+   RWStructuredBuffer buffer = ResourceDescriptorHeap[2];
+   // buffer is in the descriptor set 0, binding 0.
+   // Counter not generated, because unused.
 
 HLSL Expressions
 ================
@@ -2392,8 +2561,8 @@ HLSL Intrinsic Function   GLSL Extended Instruction
 ``log10``               ``Log2`` (scaled by ``1/log2(10)``)
 ``log2``                ``Log2``
 ``mad``                 ``Fma``
-``max``                 ``SMax``/``UMax``/``NMax``
-``min``                 ``SMin``/``UMin``/``NMin``
+``max``                 ``SMax``/``UMax``/``NMax``/``FMax``
+``min``                 ``SMin``/``UMin``/``NMin``/``FMin``
 ``modf``                ``ModfStruct``
 ``normalize``           ``Normalize``
 ``pow``                 ``Pow``
@@ -2413,6 +2582,13 @@ HLSL Intrinsic Function   GLSL Extended Instruction
 ``tanh``                ``Tanh``
 ``trunc``               ``Trunc``
 ======================= ===================================
+
+Note on NMax,Nmin,FMax & FMin:
+
+This compiler supports the ``--ffinite-math-only`` option, which allows
+assuming non-NaN parameters to some operations. ``min`` & ``max`` intrinsics
+will by default generate ``NMin`` & ``NMax`` instructions, but if this option
+is enabled, ``FMin`` & ``FMax`` can be generated instead.
 
 Synchronization intrinsics
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2730,6 +2906,30 @@ If an output unsigned integer ``status`` argument is present,
 ``OpImageSparseSampleDrefExplicitLod`` is used instead. The resulting SPIR-V
 ``Residency Code`` will be written to ``status``.
 
+``.SampleCmpBias(sampler, location, bias, comparator[, offset][, clamp][, Status])``
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Not available to ``Texture3D``, ``Texture2DMS``, and ``Texture2DMSArray``.
+
+The translation is similar to ``.SampleBias()``, but the
+``OpImageSampleDrefImplicitLod`` instruction is used.
+
+If an output unsigned integer ``status`` argument is present,
+``OpImageSparseSampleDrefImplicitLod`` is used instead. The resulting SPIR-V
+``Residency Code`` will be written to ``status``.
+
+``.SampleCmpGrad(sampler, location, ddx, ddy, comparator[, offset][, clamp][, Status])``
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Not available to ``Texture3D``, ``Texture2DMS``, and ``Texture2DMSArray``.
+
+The translation is similar to ``.SampleGrad()``, but the
+``OpImageSampleDrefExplicitLod`` instruction are used.
+
+If an output unsigned integer ``status`` argument is present,
+``OpImageSparseSampleDrefExplicitLod`` is used instead. The resulting SPIR-V
+``Residency Code`` will be written to ``status``.
+
 ``.Gather()``
 +++++++++++++
 
@@ -2823,10 +3023,11 @@ Not available to ``Texture2DMS`` and ``Texture2DMSArray``.
 
 Since texture types are represented as ``OpTypeImage``, the ``OpImageQueryLod``
 instruction is used for translation. An ``OpSampledImage`` is created based on
-the ``SamplerState`` passed to the function. The resulting sampled image and
-the coordinate passed to the function are used to invoke ``OpImageQueryLod``.
-The result of ``OpImageQueryLod`` is a ``float2``. The first element contains
-the mipmap array layer. The second element contains the unclamped level of detail.
+the ``SamplerState`` or ``SamplerComparisonState`` passed to the function. The
+resulting sampled image and the coordinate passed to the function are used to
+invoke ``OpImageQueryLod``. The result of ``OpImageQueryLod`` is a ``float2``.
+The first element contains the mipmap array layer. The second element contains
+the unclamped level of detail.
 
 ``Texture1D``
 ~~~~~~~~~~~~~
@@ -3407,26 +3608,34 @@ shaders and are translated to SPIR-V execution modes according to the table belo
 
 .. table:: Mapping from HLSL attribute to SPIR-V execution mode
 
-+-------------------+--------------------+-------------------------+
-|  HLSL Attribute   |   Value            | SPIR-V Execution Mode   |
-+===================+====================+=========================+
-|``outputtopology`` | ``point``          | ``OutputPoints``        |
-|                   +--------------------+-------------------------+
-|``(Mesh shader)``  | ``line``           | ``OutputLinesNV``       |
-|                   +--------------------+-------------------------+
-|                   | ``triangle``       | ``OutputTrianglesNV``   |
-+-------------------+--------------------+-------------------------+
-| ``numthreads``    | ``X, Y, Z``        | ``LocalSize X, Y, Z``   |
-|                   |                    |                         |
-|                   | ``(X*Y*Z <= 128)`` |                         |
-+-------------------+--------------------+-------------------------+
++-----------------------+--------------------+-------------------------+
+|  HLSL Attribute       |   Value            | SPIR-V Execution Mode   |
++=======================+====================+=========================+
+|``outputtopology``     | ``point``          | ``OutputPoints``        |
+|                       +--------------------+-------------------------+
+| (SPV_NV_mesh_shader)  | ``line``           | ``OutputLinesNV``       |
+|                       |                    |                         |
+|                       +--------------------+-------------------------+
+|                       | ``triangle``       | ``OutputTrianglesNV``   |
++-----------------------+--------------------+-------------------------+
+|``outputtopology``     | ``point``          | ``OutputPoints``        |
+|                       +--------------------+-------------------------+
+| (SPV_EXT_mesh_shader) | ``line``           | ``OutputLinesEXT``      |
+|                       |                    |                         |
+|                       +--------------------+-------------------------+
+|                       | ``triangle``       | ``OutputTrianglesEXT``  |
++-----------------------+--------------------+-------------------------+
+| ``numthreads``        | ``X, Y, Z``        | ``LocalSize X, Y, Z``   |
+|                       |                    |                         |
+|                       | ``(X*Y*Z <= 128)`` |                         |
++-----------------------+--------------------+-------------------------+
 
 Intrinsics
 ~~~~~~~~~~
 The following HLSL intrinsics are used in Mesh or Amplification shaders
 and are translated to SPIR-V intrinsics according to the table below:
 
-.. table:: Mapping from HLSL intrinsics to SPIR-V intrinsics
+.. table:: Mapping from HLSL intrinsics to SPIR-V intrinsics for SPV_NV_mesh_shader
 
 +---------------------------+--------------------+-----------------------------------------+
 |  HLSL Intrinsic           |  Parameters        | SPIR-V Intrinsic                        |
@@ -3443,6 +3652,24 @@ and are translated to SPIR-V intrinsics according to the table below:
 |                           |                    |                                         |
 |                           | ``MeshPayload``    |                                         |
 +---------------------------+--------------------+-----------------------------------------+
+
+.. table:: Mapping from HLSL intrinsics to SPIR-V intrinsics for SPV_EXT_mesh_shader
+
++---------------------------+--------------------+--------------------------------------------------------------+
+|  HLSL Intrinsic           |  Parameters        | SPIR-V Intrinsic                                             |
++===========================+====================+==============================================================+
+| ``SetMeshOutputCounts``   | ``numVertices``    | ``OpSetMeshOutputsEXT``                                      |
+|                           |                    |                                                              |
+| ``(Mesh shader)``         | ``numPrimitives``  |                                                              |
++---------------------------+--------------------+--------------------------------------------------------------+
+| ``DispatchMesh``          | ``ThreadX``        | ``OpEmitMeshTasksEXT ThreadX ThreadY ThreadZ MeshPayload``   |
+|                           |                    |                                                              |
+| ``(Amplification shader)``| ``ThreadY``        | ``TaskCountNV ThreadX*ThreadY*ThreadZ``                      |
+|                           |                    |                                                              |
+|                           | ``ThreadZ``        |                                                              |
+|                           |                    |                                                              |
+|                           | ``MeshPayload``    |                                                              |
++---------------------------+--------------------+--------------------------------------------------------------+
 
 | Note : For ``DispatchMesh`` intrinsic, we also emit ``MeshPayload`` as output block with ``PerTaskNV`` decoration
 
@@ -3503,7 +3730,7 @@ Intrinsics
 ``WorldRayOrigin()``            ``WorldRayOrigin{NV/KHR}``                 ✓             ✓          ✓       ✓
 ``WorldRayDirection()``         ``WorldRayDirection{NV/KHR}``              ✓             ✓          ✓       ✓
 ``RayTMin()``                   ``RayTmin{NV/KHR}``                        ✓             ✓          ✓       ✓
-``RayTCurrent()``               ``HitT{NV/KHR}``                           ✓             ✓          ✓       ✓
+``RayTCurrent()``               ``RayTmax{NV/KHR}``                        ✓             ✓          ✓       ✓
 ``RayFlags()``                  ``IncomingRayFlags{NV/KHR}``               ✓             ✓          ✓       ✓
 ``InstanceIndex()``             ``InstanceId``                             ✓             ✓          ✓
 ``GeometryIndex()``             ``RayGeometryIndexKHR``                    ✓             ✓          ✓
@@ -3741,8 +3968,8 @@ RayQuery Mapping to SPIR-V
 |``.WorldRayOrigin`                                 | ``OpRayQueryGetWorldRayOriginKHR``                                      |
 +---------------------------------------------------+-------------------------------------------------------------------------+
 
-Shader Model 6.0 Wave Intrinsics
-================================
+Shader Model 6.0+ Wave Intrinsics
+=================================
 
 
 Note that Wave intrinsics requires SPIR-V 1.3, which is supported by Vulkan 1.1.
@@ -3755,9 +3982,9 @@ loading from SPIR-V builtin variable ``SubgroupSize`` and
 ``SubgroupLocalInvocationId`` respectively, the rest are translated into SPIR-V
 group operations with ``Subgroup`` scope according to the following chart:
 
-============= ============================ =================================== ======================
+============= ============================ =================================== ==============================
 Wave Category       Wave Intrinsics               SPIR-V Opcode                SPIR-V Group Operation
-============= ============================ =================================== ======================
+============= ============================ =================================== ==============================
 Query         ``WaveIsFirstLane()``        ``OpGroupNonUniformElect``
 Vote          ``WaveActiveAnyTrue()``      ``OpGroupNonUniformAny``
 Vote          ``WaveActiveAllTrue()``      ``OpGroupNonUniformAll``
@@ -3780,7 +4007,13 @@ Quad          ``QuadReadAcrossX()``        ``OpGroupNonUniformQuadSwap``
 Quad          ``QuadReadAcrossY()``        ``OpGroupNonUniformQuadSwap``
 Quad          ``QuadReadAcrossDiagonal()`` ``OpGroupNonUniformQuadSwap``
 Quad          ``QuadReadLaneAt()``         ``OpGroupNonUniformQuadBroadcast``
-============= ============================ =================================== ======================
+N/A           ``WaveMatch()``              ``OpGroupNonUniformPartitionNV``
+Multiprefix   ``WaveMultiPrefixSum()``     ``OpGroupNonUniform*Add``           ``PartitionedExclusiveScanNV``
+Multiprefix   ``WaveMultiPrefixProduct()`` ``OpGroupNonUniform*Mul``           ``PartitionedExclusiveScanNV``
+Multiprefix   ``WaveMultiPrefixBitAnd()``  ``OpGroupNonUniformLogicalAnd``     ``PartitionedExclusiveScanNV``
+Multiprefix   ``WaveMultiPrefixBitOr()``   ``OpGroupNonUniformLogicalOr``      ``PartitionedExclusiveScanNV``
+Multiprefix   ``WaveMultiPrefixBitXor()``  ``OpGroupNonUniformLogicalXor``     ``PartitionedExclusiveScanNV``
+============= ============================ =================================== ==============================
 
 The Implicit ``vk`` Namespace
 =============================
@@ -3808,14 +4041,14 @@ implicit ``vk`` namepsace.
 
   // Implicitly defined when compiling to SPIR-V.
   namespace vk {
-  
+
     const uint CrossDeviceScope = 0;
     const uint DeviceScope      = 1;
     const uint WorkgroupScope   = 2;
     const uint SubgroupScope    = 3;
     const uint InvocationScope  = 4;
     const uint QueueFamilyScope = 5;
-  
+
     uint64_t ReadClock(in uint scope);
     T        RawBufferLoad<T = uint>(in uint64_t deviceAddress,
                                      in uint alignment = 4);
@@ -3868,20 +4101,20 @@ functionality to HLSL:
 
 .. code:: hlsl
 
-  // RawBufferLoad and RawBufferStore use 'uint' for the default template argument. 
+  // RawBufferLoad and RawBufferStore use 'uint' for the default template argument.
   // The default alignment is 4. Note that 'alignment' must be a constant integer.
   T RawBufferLoad<T = uint>(in uint64_t deviceAddress, in uint alignment = 4);
   void RawBufferStore<T = uint>(in uint64_t deviceAddress, in T value, in uint alignment = 4);
 
 
-These intrinsics allow the shader program to load and store a single value with type T (int, float2, struct, etc...) 
+These intrinsics allow the shader program to load and store a single value with type T (int, float2, struct, etc...)
 from GPU accessible memory at given address, similar to ``ByteAddressBuffer.Load()``.
-Additionally, these intrinsics allow users to set the memory alignment for the underlying data. 
-We assume a 'uint' type when the template argument is missing, and we use a value of '4' for the default alignment. 
+Additionally, these intrinsics allow users to set the memory alignment for the underlying data.
+We assume a 'uint' type when the template argument is missing, and we use a value of '4' for the default alignment.
 Note that the alignment argument must be a constant integer if it is given.
 
-Though we do support setting the `alignment` of the data load and store, we do not currently 
-support setting the memory layout for the data. Since these intrinsics are supposed to load 
+Though we do support setting the `alignment` of the data load and store, we do not currently
+support setting the memory layout for the data. Since these intrinsics are supposed to load
 "arbitrary" data to or from a random device address, we assume that the program loads/stores some "bytes of data",
 but that its format or layout is unknown. Therefore, keep in mind that these intrinsics
 load or store ``sizeof(T)`` bytes of data, and that loading/storing data with a struct
@@ -4017,6 +4250,8 @@ codegen for Vulkan:
   to the HLSL entry point name.
 - ``-fspv-use-legacy-buffer-matrix-order``: Assumes the legacy matrix order (row
   major) when accessing raw buffers (e.g., ByteAdddressBuffer).
+- ``-fspv-preserve-interface``: Preserves all interface variables in the entry
+  point, even when those variables are unused.
 - ``-Wno-vk-ignored-features``: Does not emit warnings on ignored features
   resulting from no Vulkan support, e.g., cbuffer member initializer.
 

@@ -7,10 +7,12 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "assert.h"
+#include "dxc/Support/WinFunctions.h"
+#include "dxc/Support/WinIncludes.h"
 #ifndef _WIN32
 
-#include "dxc/Support/WinAdapter.h"
-#include "dxc/Support/WinFunctions.h"
+#include "dxc/Support/Unicode.h"
 
 //===--------------------------- CAllocator -------------------------------===//
 
@@ -49,24 +51,14 @@ BSTR SysAllocStringLen(const OLECHAR *strIn, UINT ui) {
 
   return strOut;
 }
+//===--------------------------- BSTR Length ------------------------------===//
+unsigned int SysStringLen(const BSTR bstrString) {
+  if (!bstrString)
+    return 0;
 
-//===---------------------- Char converstion ------------------------------===//
+  uint32_t *blobIn = (uint32_t *)((uintptr_t)bstrString - sizeof(uint32_t));
 
-const char *CPToLocale(uint32_t CodePage) {
-#ifdef __APPLE__
-  static const char *utf8 = "en_US.UTF-8";
-  static const char *iso88591 = "en_US.ISO8859-1";
-#else
-  static const char *utf8 = "en_US.utf8";
-  static const char *iso88591 = "en_US.iso88591";
-#endif
-  if (CodePage == CP_UTF8) {
-    return utf8;
-  } else if (CodePage == CP_ACP) {
-    // Experimentation suggests that ACP is expected to be ISO-8859-1
-    return iso88591;
-  }
-  return nullptr;
+  return blobIn[0] / sizeof(OLECHAR);
 }
 
 //===--------------------------- CHandle -------------------------------===//
@@ -74,5 +66,41 @@ const char *CPToLocale(uint32_t CodePage) {
 CHandle::CHandle(HANDLE h) { m_h = h; }
 CHandle::~CHandle() { CloseHandle(m_h); }
 CHandle::operator HANDLE() const throw() { return m_h; }
+
+// CComBSTR
+CComBSTR::CComBSTR(int nSize, LPCWSTR sz) {
+  if (nSize < 0) {
+    throw std::invalid_argument("CComBSTR must have size >= 0");
+  }
+
+  if (nSize == 0) {
+    m_str = NULL;
+  } else {
+    m_str = SysAllocStringLen(sz, nSize);
+    if (!*this) {
+      std::runtime_error("out of memory");
+    }
+  }
+}
+
+bool CComBSTR::operator==(const CComBSTR &bstrSrc) const throw() {
+  return wcscmp(m_str, bstrSrc.m_str) == 0;
+}
+
+//===--------------------------- WArgV -------------------------------===//
+WArgV::WArgV(int argc, const char **argv)
+    : WStringVector(argc), WCharPtrVector(argc) {
+  for (int i = 0; i < argc; ++i) {
+    std::string S(argv[i]);
+    const int wideLength = ::MultiByteToWideChar(
+        CP_UTF8, MB_ERR_INVALID_CHARS, S.data(), S.size(), nullptr, 0);
+    assert(wideLength > 0 &&
+           "else it should have failed during size calculation");
+    WStringVector[i].resize(wideLength);
+    ::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, S.data(), S.size(),
+                          &(WStringVector[i])[0], WStringVector[i].size());
+    WCharPtrVector[i] = WStringVector[i].data();
+  }
+}
 
 #endif

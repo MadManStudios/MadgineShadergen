@@ -11,6 +11,7 @@
 
 #include <array>
 #include <limits>
+#include <optional>
 
 #include "dxc/DXIL/DxilShaderModel.h"
 #include "clang/AST/DeclTemplate.h"
@@ -138,7 +139,7 @@ struct FunctionTypeMapInfo {
 struct VkImageFeatures {
   // True if it is a Vulkan "Combined Image Sampler".
   bool isCombinedImageSampler;
-  spv::ImageFormat format; // SPIR-V image format.
+  std::optional<spv::ImageFormat> format; // SPIR-V image format.
 };
 
 // A struct that contains the information of a resource that will be used to
@@ -209,6 +210,10 @@ public:
   SpirvDebugType *getDebugTypeVector(const SpirvType *spirvType,
                                      SpirvDebugInstruction *elemType,
                                      uint32_t elemCount);
+
+  SpirvDebugType *getDebugTypeMatrix(const SpirvType *spirvType,
+                                     SpirvDebugInstruction *vectorType,
+                                     uint32_t vectorCount);
 
   SpirvDebugType *getDebugTypeFunction(const SpirvType *spirvType,
                                        uint32_t flags, SpirvDebugType *ret,
@@ -284,13 +289,14 @@ public:
     return accelerationStructureTypeNV;
   }
 
-  const RayQueryTypeKHR *getRayQueryTypeKHR() const {
-    return rayQueryTypeKHR;
-  }
+  const RayQueryTypeKHR *getRayQueryTypeKHR() const { return rayQueryTypeKHR; }
 
-  const SpirvIntrinsicType *
-  getSpirvIntrinsicType(unsigned typeId, unsigned typeOpCode,
-                        llvm::ArrayRef<SpvIntrinsicTypeOperand> operands);
+  const SpirvIntrinsicType *getOrCreateSpirvIntrinsicType(
+      unsigned typeId, unsigned typeOpCode,
+      llvm::ArrayRef<SpvIntrinsicTypeOperand> operands);
+
+  const SpirvIntrinsicType *getOrCreateSpirvIntrinsicType(
+      unsigned typeOpCode, llvm::ArrayRef<SpvIntrinsicTypeOperand> operands);
 
   SpirvIntrinsicType *getCreatedSpirvIntrinsicType(unsigned typeId);
 
@@ -373,7 +379,7 @@ public:
   getVkImageFeaturesForSpirvVariable(const SpirvVariable *spvVar) {
     auto itr = spvVarToVkImageFeatures.find(spvVar);
     if (itr == spvVarToVkImageFeatures.end())
-      return {false, spv::ImageFormat::Unknown};
+      return {false, std::nullopt};
     return itr->second;
   }
 
@@ -473,7 +479,8 @@ private:
   llvm::DenseMap<const SpirvType *, SCToPtrTyMap> pointerTypes;
   llvm::SmallVector<const HybridPointerType *, 8> hybridPointerTypes;
   llvm::DenseSet<FunctionType *, FunctionTypeMapInfo> functionTypes;
-  llvm::DenseMap<unsigned, SpirvIntrinsicType*> spirvIntrinsicTypes;
+  llvm::DenseMap<unsigned, SpirvIntrinsicType *> spirvIntrinsicTypesById;
+  llvm::SmallVector<const SpirvIntrinsicType *, 8> spirvIntrinsicTypes;
   const AccelerationStructureTypeNV *accelerationStructureTypeNV;
   const RayQueryTypeKHR *rayQueryTypeKHR;
 

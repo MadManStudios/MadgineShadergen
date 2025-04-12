@@ -102,6 +102,9 @@ public:
   // Returns false otherwise (e.g. if the capability already existed).
   bool addCapability(SpirvCapability *cap);
 
+  // Returns true if the capability is in the module.
+  bool hasCapability(SpirvCapability &cap);
+
   // Set the memory model of the module.
   void setMemoryModel(SpirvMemoryModel *model);
 
@@ -113,6 +116,11 @@ public:
 
   // Add an entry point to the module.
   void addEntryPoint(SpirvEntryPoint *);
+
+  // Returns an existing execution mode instruction that is the same as em if it
+  // exists. Return nullptr otherwise.
+  SpirvExecutionMode *findExecutionMode(SpirvFunction *entryPoint,
+                                        spv::ExecutionMode em);
 
   // Adds an execution mode to the module.
   void addExecutionMode(SpirvExecutionMode *);
@@ -137,6 +145,9 @@ public:
   // Adds a constant to the module.
   void addConstant(SpirvConstant *);
 
+  // Adds an Undef to the module.
+  void addUndef(SpirvUndef *);
+
   // Adds given string to the module which will be emitted via OpString.
   void addString(SpirvString *);
 
@@ -158,6 +169,10 @@ public:
   llvm::ArrayRef<SpirvEntryPoint *> getEntryPoints() const {
     return entryPoints;
   }
+
+  void setPerVertexInterpMode(bool b) { perVertexInterp = b; }
+
+  bool isPerVertexInterpMode() const { return perVertexInterp; }
 
 private:
   // Use a set for storing capabilities. This will ensure there are no duplicate
@@ -193,6 +208,7 @@ private:
       decorations;
 
   std::vector<SpirvConstant *> constants;
+  std::vector<SpirvUndef *> undefs;
   std::vector<SpirvVariable *> variables;
   // A vector of functions in the module in the order that they should be
   // emitted. The order starts with the entry-point function followed by a
@@ -204,6 +220,8 @@ private:
 
   // Keep all rich DebugInfo instructions.
   llvm::SmallVector<SpirvDebugInstruction *, 32> debugInstructions;
+  // Whether current module is in pervertex interpolation mode.
+  bool perVertexInterp;
 };
 
 } // end namespace spirv

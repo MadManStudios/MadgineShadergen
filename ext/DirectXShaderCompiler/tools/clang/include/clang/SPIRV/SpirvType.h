@@ -30,6 +30,13 @@ enum class StructInterfaceType : uint32_t {
   UniformBuffer = 2,
 };
 
+struct BitfieldInfo {
+  // Offset of the bitfield, in bits, from the basetype start.
+  uint32_t offsetInBits;
+  // Size of the bitfield, in bits.
+  uint32_t sizeInBits;
+};
+
 class SpirvType {
 public:
   enum Kind {
@@ -290,14 +297,16 @@ class StructType : public SpirvType {
 public:
   struct FieldInfo {
   public:
-    FieldInfo(const SpirvType *type_, llvm::StringRef name_ = "",
+    FieldInfo(const SpirvType *type_, uint32_t fieldIndex_,
+              llvm::StringRef name_ = "",
               llvm::Optional<uint32_t> offset_ = llvm::None,
               llvm::Optional<uint32_t> matrixStride_ = llvm::None,
               llvm::Optional<bool> isRowMajor_ = llvm::None,
               bool relaxedPrecision = false, bool precise = false)
-        : type(type_), name(name_), offset(offset_), sizeInBytes(llvm::None),
-          matrixStride(matrixStride_), isRowMajor(isRowMajor_),
-          isRelaxedPrecision(relaxedPrecision), isPrecise(precise) {
+        : type(type_), fieldIndex(fieldIndex_), name(name_), offset(offset_),
+          sizeInBytes(llvm::None), matrixStride(matrixStride_),
+          isRowMajor(isRowMajor_), isRelaxedPrecision(relaxedPrecision),
+          isPrecise(precise) {
       // A StructType may not contain any hybrid types.
       assert(!isa<HybridType>(type_));
     }
@@ -306,6 +315,10 @@ public:
 
     // The field's type.
     const SpirvType *type;
+    // The index of this field in the composite construct.
+    // When the struct contains bitfields, StructType index and construct index
+    // can diverge as we merge bitfields together.
+    uint32_t fieldIndex;
     // The field's name.
     std::string name;
     // The integer offset in bytes for this field.
@@ -320,6 +333,8 @@ public:
     bool isRelaxedPrecision;
     // Whether this field is marked as 'precise'.
     bool isPrecise;
+    // Information about the bitfield (if applicable).
+    llvm::Optional<BitfieldInfo> bitfield;
   };
 
   StructType(
@@ -405,8 +420,7 @@ public:
 
 class RayQueryTypeKHR : public SpirvType {
 public:
-  RayQueryTypeKHR()
-      : SpirvType(TK_RayQueryKHR, "rayQueryKHR") {}
+  RayQueryTypeKHR() : SpirvType(TK_RayQueryKHR, "rayQueryKHR") {}
 
   static bool classof(const SpirvType *t) {
     return t->getKind() == TK_RayQueryKHR;
@@ -415,15 +429,16 @@ public:
 
 class SpirvInstruction;
 struct SpvIntrinsicTypeOperand {
-  SpvIntrinsicTypeOperand(SpirvType *type_operand)
+  SpvIntrinsicTypeOperand(const SpirvType *type_operand)
       : operand_as_type(type_operand), isTypeOperand(true) {}
   SpvIntrinsicTypeOperand(SpirvInstruction *inst_operand)
       : operand_as_inst(inst_operand), isTypeOperand(false) {}
+  bool operator==(const SpvIntrinsicTypeOperand &that) const;
   union {
-    SpirvType *operand_as_type;
+    const SpirvType *operand_as_type;
     SpirvInstruction *operand_as_inst;
   };
-  bool isTypeOperand;
+  const bool isTypeOperand;
 };
 
 class SpirvIntrinsicType : public SpirvType {
@@ -437,6 +452,12 @@ public:
   unsigned getOpCode() const { return typeOpCode; }
   llvm::ArrayRef<SpvIntrinsicTypeOperand> getOperands() const {
     return operands;
+  }
+
+  bool operator==(const SpirvIntrinsicType &that) const {
+    return typeOpCode == that.typeOpCode &&
+           operands.size() == that.operands.size() &&
+           std::equal(operands.begin(), operands.end(), that.operands.begin());
   }
 
 private:
@@ -467,9 +488,11 @@ public:
               clang::VKOffsetAttr *offset = nullptr,
               hlsl::ConstantPacking *packOffset = nullptr,
               const hlsl::RegisterAssignment *regC = nullptr,
-              bool precise = false)
+              bool precise = false,
+              llvm::Optional<BitfieldInfo> bitfield = llvm::None)
         : astType(astType_), name(name_), vkOffsetAttr(offset),
-          packOffsetAttr(packOffset), registerC(regC), isPrecise(precise) {}
+          packOffsetAttr(packOffset), registerC(regC), isPrecise(precise),
+          bitfield(std::move(bitfield)) {}
 
     // The field's type.
     QualType astType;
@@ -483,6 +506,9 @@ public:
     const hlsl::RegisterAssignment *registerC;
     // Whether this field is marked as 'precise'.
     bool isPrecise;
+    // Whether this field is a bitfield or not. If set to false, bitfield width
+    // value is undefined.
+    llvm::Optional<BitfieldInfo> bitfield;
   };
 
   HybridStructType(
