@@ -53,6 +53,7 @@ jobs:
     - name: Zip Binaries
       shell: pwsh
       run: |
+          cd ${{ steps.strings.outputs.build-output-dir }}
           if ($env:RUNNER_OS -eq "Windows") {
             if (test-path ${{ matrix.os }}.zip) {
               remove-item ${{ matrix.os }}.zip
@@ -70,5 +71,5 @@ jobs:
       with:
         name: latest
         tag_name: latest-main
-        files: ${{ matrix.os }}.zip
+        files: ${{ steps.strings.outputs.build-output-dir }}/${{ matrix.os }}.zip
           

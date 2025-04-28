@@ -2,7 +2,7 @@
 #ifdef _WIN32
 #    include <Windows.h>
 #endif
-#include "dxc/dxcapi.h"
+#include <dxc\dxcapi.h>
 
 #include <vector>
 
