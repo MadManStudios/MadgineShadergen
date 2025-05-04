@@ -62,7 +62,7 @@ jobs:
             if (test-path ${{ matrix.os }}.zip) {
               remove-item ${{ matrix.os }}.zip
             }
-            7z a ${{ matrix.os }}.zip ShaderGen.exe dxcompiler.dll 
+            7z a ${{ matrix.os }}.zip ShaderGen.exe dxcompiler.dll dxcompiler.lib
           }
           else {
             rm -rf ${{ matrix.os }}.zip
