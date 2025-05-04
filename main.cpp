@@ -20,6 +20,8 @@
 
 #include <sstream>
 
+#include <locale>
+
 struct ReleaseDeleter {
     template <typename T>
     void operator()(T *ptr)
