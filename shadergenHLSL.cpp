@@ -131,7 +131,7 @@ int transpileHLSL(int apilevel, const std::wstring &fileName, const std::wstring
 
             spirv_cross::CompilerHLSL hlsl { (uint32_t *)pSpirv->GetBufferPointer(), pSpirv->GetBufferSize() / 4 };
             spirv_cross::CompilerHLSL::Options options {};
-            options.shader_model = 50;
+            options.shader_model = 51;
             options.flatten_matrix_vertex_input_semantics = true;
             hlsl.set_hlsl_options(options);
             spirv_cross::CompilerGLSL::Options common_options {};
@@ -152,12 +152,6 @@ int transpileHLSL(int apilevel, const std::wstring &fileName, const std::wstring
                         std::cerr << "(1,1): warning : Unsupported semantic " << semantic << " used for " << name << std::endl;
                     }
                 }
-            }
-
-            for (const spirv_cross::Resource &resource : hlsl.get_shader_resources().separate_images) {
-                uint32_t descriptorSpace = hlsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-                uint32_t registerIndex = hlsl.get_decoration(resource.id, spv::DecorationBinding);
-                hlsl.set_decoration(resource.id, spv::DecorationBinding, 16 + descriptorSpace * 4 + registerIndex);
             }
 
             //hlsl.build_dummy_sampler_for_combined_images();
