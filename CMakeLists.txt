@@ -11,7 +11,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   add_compile_options(-Wno-language-extension-token)
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -47,7 +47,7 @@ set (HLSL_EMBED_VERSION ON CACHE BOOL "")
 
 FetchContent_Declare(DirectXShaderCompiler
 	GIT_REPOSITORY https://github.com/microsoft/DirectXShaderCompiler.git
-	GIT_TAG v1.8.2502		
+	GIT_TAG v1.8.2505.1	
 	)
 
 FetchContent_MakeAvailable(DirectXShaderCompiler)
@@ -66,7 +66,7 @@ set(SPIRV_CROSS_CLI OFF CACHE BOOL "" FORCE)
 add_subdirectory(ext/SPIRV-Cross)
 
 
-add_executable(ShaderGen main.cpp shadergenGLSL.cpp shadergenGLSLES.cpp shadergenHLSL.cpp shadergenSPIRV.cpp)
+add_executable(ShaderGen generateCPP.cpp main.cpp shadergenGLSL.cpp shadergenGLSLES.cpp shadergenHLSL.cpp shadergenSPIRV.cpp)
 
 target_link_libraries(ShaderGen PRIVATE dxcompiler spirv-cross-glsl spirv-cross-hlsl spirv-cross-core)
 
