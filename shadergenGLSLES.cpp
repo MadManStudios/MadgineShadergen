@@ -10,8 +10,6 @@
 
 #include <memory>
 
-#include <assert.h>
-
 #include <iostream>
 
 #include <map>
@@ -22,40 +20,7 @@
 
 #include <locale>
 
-struct ReleaseDeleter {
-    template <typename T>
-    void operator()(T *ptr)
-    {
-        ptr->Release();
-    }
-};
-
-template <typename T>
-struct ReleasePtr : std::unique_ptr<T, ReleaseDeleter> {
-    using std::unique_ptr<T, ReleaseDeleter>::unique_ptr;
-
-    T **operator&()
-    {
-        assert(!*this);
-        return reinterpret_cast<T **>(this);
-    }
-
-    T *const *operator&() const
-    {
-        return reinterpret_cast<T *const *>(this);
-    }
-
-    operator T *() const
-    {
-        return this->get();
-    }
-};
-
-#define CHECK_HR(Operation)                                          \
-    if (FAILED(hr)) {                                                \
-        std::cerr << "Error in " #Operation ": " << hr << std::endl; \
-        return -1;                                                   \
-    }
+#include "releaseptr.h"
 
 static std::map<std::string, uint32_t> sSemanticLocationMappings {
     { "POSITION0", 0 },
@@ -75,7 +40,7 @@ static std::map<std::string, uint32_t> sSemanticLocationMappings {
     { "INSTANCEDATA6", std::numeric_limits<uint32_t>::max() }
 };
 
-int transpileGLSLES(const std::wstring &fileName, const std::wstring &outFolder, IDxcResult *result)
+int transpileGLSLES(const std::wstring &fileName, const std::wstring &outFolder, IDxcResult *result, const std::wstring& profile)
 {
     std::cout << "GLSLES... ";
 
@@ -172,7 +137,7 @@ int transpileGLSLES(const std::wstring &fileName, const std::wstring &outFolder,
     }
 
     auto extIt = fileName.rfind('.');
-    std::wstring extension = L"_" + fileName.substr(extIt + 1, 2) + L".glsl_es";
+    std::wstring extension = L"_" + profile.substr(0, 2) + L".glsl_es";
 
     auto fileNameBegin = fileName.rfind('/');
     std::wstring outputFile = outFolder + L"/" + (fileName.substr(fileNameBegin + 1, extIt - fileNameBegin - 1) + extension);
