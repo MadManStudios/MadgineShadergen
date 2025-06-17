@@ -178,7 +178,7 @@ int transpileSPIRV(const std::wstring &fileName, const std::wstring &outFolder, 
     auto fileNameBegin = fileName.rfind('/');
     std::wstring outputFile = outFolder + L"/" + (fileName.substr(fileNameBegin + 1, extIt - fileNameBegin - 1) + extension);
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-    std::ofstream of { converter.to_bytes( outputFile ) };
+    std::ofstream of { converter.to_bytes( outputFile ), std::ios::binary };
     of.write(static_cast<char *>(pSpirv->GetBufferPointer()), pSpirv->GetBufferSize());
 
     std::cout << "Success!" << std::endl;
