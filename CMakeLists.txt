@@ -70,7 +70,7 @@ add_executable(ShaderGen generateCPP.cpp main.cpp shadergenGLSL.cpp shadergenGLS
 
 target_link_libraries(ShaderGen PRIVATE dxcompiler spirv-cross-glsl spirv-cross-hlsl spirv-cross-core)
 
-target_include_directories(ShaderGen PRIVATE ${directxshadercompiler_SOURCE_DIR}/include)
+target_include_directories(ShaderGen PRIVATE ${directxshadercompiler_SOURCE_DIR}/include ${directxshadercompiler_SOURCE_DIR}/external/DirectX-Headers/include/directx ${directxshadercompiler_SOURCE_DIR}/external/DirectX-Headers/include/wsl/stubs)
 
 add_custom_command(TARGET ShaderGen POST_BUILD
 					COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:dxcompiler> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})

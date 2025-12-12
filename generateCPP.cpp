@@ -20,8 +20,7 @@
 
 #include <optional>
 
-#include "d3d12shader.h"
-#include "d3dcompiler.h"
+#include "dxc/Support/D3DReflection.h"
 
 extern ReleasePtr<IDxcUtils> library;
 extern ReleasePtr<IDxcCompiler3> compiler;
