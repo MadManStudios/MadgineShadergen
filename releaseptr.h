@@ -2,6 +2,8 @@
 
 #include <assert.h>
 
+#include <memory>
+
 struct ReleaseDeleter {
     template <typename T>
     void operator()(T* ptr)
