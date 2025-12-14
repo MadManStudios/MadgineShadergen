@@ -217,16 +217,19 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 	arguments.push_back(L"-Wno-ignored-attributes");
 
 	ReleasePtr<IDxcResult> pCompileResult;
-	HRESULT hr = compiler->Compile(&sourceBuffer, arguments.data(), arguments.size(), includeHandler, IID_PPV_ARGS(&pCompileResult));
-	CHECK_HR(Compile);
+	HRESULT compileError = compiler->Compile(&sourceBuffer, arguments.data(), arguments.size(), includeHandler, IID_PPV_ARGS(&pCompileResult));
 
 	//Error Handling
 	ReleasePtr<IDxcBlobUtf8> pErrors;
-	hr = pCompileResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&pErrors), nullptr);
+	HRESULT hr = pCompileResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&pErrors), nullptr);
 	CHECK_HR(GetOutput / Errors);
 	if (pErrors && pErrors->GetStringLength() > 0) {
 		std::cerr << "Error compiling HLSL" << std::endl;
-		std::cerr << (char*)pErrors->GetBufferPointer() << std::endl;
+		std::cerr << (char*)pErrors->GetBufferPointer() << std::endl;		
+	}
+
+	if (FAILED(compileError)) {
+		std::cerr << "Failed to compile HLSL shader." << std::endl;
 		return -1;
 	}
 

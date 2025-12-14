@@ -192,16 +192,19 @@ int transpile(int argc, char** argv, const std::wstring &profile, const std::wst
 		spirvArguments.push_back(L"export=");
 
 
-		HRESULT hr = compiler->Compile(&sourceBuffer, spirvArguments.data(), spirvArguments.size(), includeHandler, IID_PPV_ARGS(&pCompileResult));
-		CHECK_HR(Compile);
+		HRESULT compileError = compiler->Compile(&sourceBuffer, spirvArguments.data(), spirvArguments.size(), includeHandler, IID_PPV_ARGS(&pCompileResult));
 
 		//Error Handling
 		ReleasePtr<IDxcBlobUtf8> pErrors;
-		hr = pCompileResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&pErrors), nullptr);
+		HRESULT hr = pCompileResult->GetOutput(DXC_OUT_ERRORS, IID_PPV_ARGS(&pErrors), nullptr);
 		CHECK_HR(GetOutput / Errors);
 		if (pErrors && pErrors->GetStringLength() > 0) {
 			std::cerr << "Error compiling HLSL" << std::endl;
 			std::cerr << (char*)pErrors->GetBufferPointer() << std::endl;
+		}
+
+		if (FAILED(compileError)) {
+			std::cerr << "Failed to compile HLSL to SPIR-V. HRESULT: " << compileError << std::endl;
 			return -1;
 		}
 	}
