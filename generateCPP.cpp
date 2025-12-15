@@ -320,6 +320,12 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 		}
 
 		of << "}\n";
+
+		std::cout << "Generated " << baseName << "_hlsl.h" << std::endl;;
+	}
+	else {
+		std::cerr << "Unable to get reflection data from shader." << std::endl;
+		return -1;
 	}
 
 	std::cout << "Success!" << std::endl;
