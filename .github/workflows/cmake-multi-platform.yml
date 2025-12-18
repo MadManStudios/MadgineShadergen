@@ -9,7 +9,30 @@ on:
     branches: [ "main" ]
 
 jobs:
+  configuration:
+    name: configuration  
+    runs-on: ubuntu-latest
+
+        
+    steps:
+    - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+      shell: bash
+      run: |
+        echo "Setting up configuration"
+          
+
+    outputs:
+      build_types: "{
+        \"windows-latest\": \"Release\", 
+        \"ubuntu-latest\": \"Debug\", 
+        \"macos-latest\": \"Release\"}"
+      
+
   build:
+
+    needs: configuration
+
     runs-on: ${{ matrix.os }}
 
     permissions:
@@ -47,12 +70,12 @@ jobs:
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
-        -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_BUILD_TYPE=${{ fromJSON(needs.configuration.outputs.build_types)[matrix.os] }}
         -S ${{ github.workspace }}
 
     - name: Build
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Debug
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ fromJSON(needs.configuration.outputs.build_types)[matrix.os] }}
 
     - name: Zip Binaries
       shell: pwsh
