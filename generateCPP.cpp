@@ -206,13 +206,14 @@ void forwardDeclare(std::ostream& o, std::string type) {
 }
 
 std::string patchType(std::string s) {
-	size_t i = s.find("vector<float, ");
+	/*size_t i = s.find("vector<float, ");
 	while (i != std::string::npos) {
 		s.replace(i, i + 14, "Engine::Vector");
 		s.erase(i + 15);
 		i = s.find("vector<float, ");
-	}
-	return s;
+	}*/
+
+	return "\"" + s + "\"";
 }
 
 int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& of, std::map<std::string, UINT>& generatedStructs);
@@ -357,7 +358,7 @@ int generateConstantBufferStruct(ID3D12ShaderReflectionConstantBuffer* cb, std::
 	return 0;
 }
 
-int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, const DxcBuffer& sourceBuffer, std::vector<LPCWSTR> arguments, const std::vector<std::wstring>& includes, std::map<std::wstring, std::vector<std::wstring>>& profileEntrypoints) {
+int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, const DxcBuffer& sourceBuffer, std::vector<LPCWSTR> arguments, std::vector<std::wstring> includes, std::map<std::wstring, std::vector<std::wstring>>& profileEntrypoints) {
 
 	std::cout << "CPP ... ";
 
@@ -426,6 +427,9 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 		of << "inline const Engine::Render::ShaderMetadata file_" << baseName << "{\n\
     \"" << filePath << "\",\n\
     {\n";
+
+		std::sort(includes.begin(), includes.end());
+
 		bool first = true;
 		for (const std::wstring& include : includes) {
 			if (first)
@@ -485,11 +489,6 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 			if (!signature) {
 				std::cerr << "Error demangling: " << s << "\n";
 				return -1;
-			}
-
-			forwardDeclare(of, signature->returnType);
-			for (std::string param : signature->parameterTypes) {
-				forwardDeclare(of, param);
 			}
 
 			of << "inline Engine::Render::ShaderFileObject<" << patchType(signature->returnType);

@@ -28,13 +28,96 @@ ReleasePtr<IDxcUtils> library;
 ReleasePtr<IDxcCompiler3> compiler;
 ReleasePtr<IDxcIncludeHandler> includeHandler;
 
+class IncludeHandler : public IDxcIncludeHandler {
+
+	volatile std::atomic<ULONG> m_dwRef = { 0 };
+public:
+	ULONG STDMETHODCALLTYPE AddRef() noexcept override {
+
+		return (ULONG)++m_dwRef;
+	}
+	ULONG STDMETHODCALLTYPE Release() override {
+
+		ULONG result = (ULONG)--m_dwRef;
+		if (result == 0) {
+			delete this;
+		}
+		return result;
+	}
+
+	ReleasePtr<IDxcIncludeHandler> defaultIncludeHandler;
+
+	IncludeHandler(ReleasePtr<IDxcIncludeHandler> defaultIncludeHandler) : m_dwRef(0), defaultIncludeHandler(std::move(defaultIncludeHandler)) {
+	}
+
+	HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void** ppvObject) override {
+		if (IsEqualIID(iid, __uuidof(IDxcIncludeHandler))) {
+			*(IDxcIncludeHandler**)ppvObject = this;
+			AddRef();
+			return S_OK;
+		}
+
+		return E_NOINTERFACE;
+	}
+
+	HRESULT STDMETHODCALLTYPE LoadSource(
+		_In_ LPCWSTR pFilename,                   // Filename as written in #include statement
+		_COM_Outptr_ IDxcBlob** ppIncludeSource   // Resultant source object for included file
+	) override {
+		HRESULT hr = defaultIncludeHandler->LoadSource(pFilename, ppIncludeSource);
+		if (SUCCEEDED(hr) && ppIncludeSource && *ppIncludeSource) {
+			IDxcBlob* blob = *ppIncludeSource;
+
+			constexpr const char prefix[] = R"(
+#pragma once
+#ifndef __keep
+	#ifdef export
+		#define __keep 1
+	#else
+		#define __keep 0
+	#endif
+#endif
+#if __INCLUDE_LEVEL__ == 1
+#define export 
+#endif
+#line 1
+)";
+
+			constexpr const char suffix[] = R"(
+#if __INCLUDE_LEVEL__ == 1 && __keep == 0
+#undef export
+#endif
+)";
+
+			std::vector<std::byte> bytes;
+			bytes.resize(sizeof(prefix) + sizeof(suffix) - 2 + blob->GetBufferSize());
+
+			std::memcpy(bytes.data(), prefix, sizeof(prefix) - 1);
+			std::memcpy(bytes.data() + sizeof(prefix) - 1, blob->GetBufferPointer(), blob->GetBufferSize());
+			std::memcpy(bytes.data() + sizeof(prefix) - 1 + blob->GetBufferSize(), suffix, sizeof(suffix) - 1);
+
+			IDxcBlobEncoding* outBlob = nullptr;
+
+			blob->Release();
+
+			hr = library->CreateBlob(bytes.data(), bytes.size(), 0, &outBlob);
+			if (FAILED(hr)) {
+				std::cerr << "Warum? " << hr << std::endl;
+			}
+
+			*ppIncludeSource = outBlob;
+		}
+		return hr;
+	}
+};
+
 int usage()
 {
 	std::cerr << "Usage: ShaderGen <source-file> <data-folder> [-g] Targets...\n";
 	return -1;
 }
 
-int generateCPP(const std::wstring& fileName, const std::wstring& outFile, const DxcBuffer& sourceBuffer, std::vector<LPCWSTR> arguments, const std::vector<std::wstring>& includes, std::map<std::wstring, std::vector<std::wstring>> &profileEntrypoints);
+int generateCPP(const std::wstring& fileName, const std::wstring& outFile, const DxcBuffer& sourceBuffer, std::vector<LPCWSTR> arguments, std::vector<std::wstring> includes, std::map<std::wstring, std::vector<std::wstring>>& profileEntrypoints);
 int transpileGLSL(const std::wstring& fileName, const std::wstring& outFile, IDxcResult* result, const std::wstring& profile);
 int transpileGLSLES(const std::wstring& fileName, const std::wstring& outFile, IDxcResult* result, const std::wstring& profile);
 int transpileHLSL(const std::wstring& fileName, const ReleasePtr<IDxcBlobEncoding>& pSource, const std::wstring& outFile, IDxcResult* result, bool debug, const std::vector<std::wstring>& includes, const std::wstring& profile);
@@ -113,8 +196,13 @@ int main(int argc, char** argv)
 	hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler));
 	CHECK_HR(DxcCreateInstance / Compiler);
 
-	hr = library->CreateDefaultIncludeHandler(&includeHandler);
+	ReleasePtr<IDxcIncludeHandler> defaultHandler;
+	hr = library->CreateDefaultIncludeHandler(&defaultHandler);
 	CHECK_HR(CreateIncludeHandler);
+	
+	IncludeHandler* handler = new IncludeHandler(std::move(defaultHandler));
+	handler->AddRef();
+	includeHandler = ReleasePtr<IDxcIncludeHandler>(handler);
 
 	ReleasePtr<IDxcBlobEncoding> pSource;
 	hr = library->LoadFile(sourceFile.c_str(), nullptr, &pSource);
@@ -164,9 +252,9 @@ int main(int argc, char** argv)
 	return result;
 }
 
-int transpile(int argc, char** argv, const std::wstring &profile, const std::wstring &entrypoint, const std::wstring& fileName, const std::vector<LPCWSTR> &arguments, const ReleasePtr<IDxcBlobEncoding> &pSource, bool debug, const std::vector<std::wstring> &includes, const std::wstring &dataFolder){
+int transpile(int argc, char** argv, const std::wstring& profile, const std::wstring& entrypoint, const std::wstring& fileName, const std::vector<LPCWSTR>& arguments, const ReleasePtr<IDxcBlobEncoding>& pSource, bool debug, const std::vector<std::wstring>& includes, const std::wstring& dataFolder) {
 	ReleasePtr<IDxcResult> pCompileResult;
-	
+
 	std::vector<LPCWSTR> spirvArguments;
 
 
