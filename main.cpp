@@ -206,7 +206,10 @@ int main(int argc, char** argv)
 
 	ReleasePtr<IDxcBlobEncoding> pSource;
 	hr = library->LoadFile(sourceFile.c_str(), nullptr, &pSource);
-	CHECK_HR(CreateBlobFromFile);
+	if (FAILED(hr)) {
+		std::wcerr << "Failed to load source file: " << sourceFile << ". HRESULT: " << hr << std::endl;
+		return -1;
+	}
 
 	std::vector<LPCWSTR> arguments;
 
