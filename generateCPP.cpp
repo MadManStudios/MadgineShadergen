@@ -216,9 +216,9 @@ std::string patchType(std::string s) {
 	return "\"" + s + "\"";
 }
 
-int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& of, std::map<std::string, UINT>& generatedStructs);
+int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& of, std::ostream& of_cpp, bool generateMeta, std::map<std::string, UINT>& generatedStructs);
 
-int writeType(ID3D12ShaderReflectionType* type, const char* name, UINT& size, std::ostream& target, std::ostream& of, std::map<std::string, UINT>& generatedStructs) {
+int writeType(ID3D12ShaderReflectionType* type, const char* name, UINT& size, std::ostream& target, std::ostream& of, std::ostream& of_cpp, bool generateMeta, std::map<std::string, UINT>& generatedStructs) {
 
 	D3D12_SHADER_TYPE_DESC typeDesc;
 	HRESULT hr = type->GetDesc(&typeDesc);
@@ -233,7 +233,7 @@ int writeType(ID3D12ShaderReflectionType* type, const char* name, UINT& size, st
 			typeName = "uint32_t";
 		break;
 	case D3D_SVC_STRUCT:
-		if (int result = generateStruct(type, size, of, generatedStructs))
+		if (int result = generateStruct(type, size, of, of_cpp, generateMeta, generatedStructs))
 			return result;
 		break;
 	case D3D_SVC_VECTOR:
@@ -266,7 +266,7 @@ int writeType(ID3D12ShaderReflectionType* type, const char* name, UINT& size, st
 	return 0;
 }
 
-int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& of, std::map<std::string, UINT>& generatedStructs) {
+int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& of, std::ostream &of_cpp, bool generateMeta, std::map<std::string, UINT>& generatedStructs) {
 	D3D12_SHADER_TYPE_DESC desc;
 	HRESULT hr = type->GetDesc(&desc);
 	CHECK_HR(Type / GetDesc);
@@ -275,8 +275,13 @@ int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& o
 	if (pib.second) {
 
 		std::stringstream ss;
+		std::stringstream ss_keyvalue;
+		std::stringstream ss_serialize;
 
 		ss << "struct " << desc.Name << "{\n";
+
+		ss_keyvalue << "METATABLE_BEGIN(HLSL::" << desc.Name << ");\n";
+		ss_serialize << "SERIALIZETABLE_BEGIN(HLSL::" << desc.Name << ");\n";
 
 		size = 0;
 
@@ -291,17 +296,26 @@ int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& o
 
 			UINT memberSize = 0;
 
-			if (int result = writeType(memberType, type->GetMemberTypeName(i), memberSize, ss, of, generatedStructs))
+			if (int result = writeType(memberType, type->GetMemberTypeName(i), memberSize, ss, of, of_cpp, generateMeta, generatedStructs))
 				return result;
 
 			ss << " // offset: " << memberDesc.Offset << ", size: " << memberSize << "\n";
+
+			ss_keyvalue << "    MEMBER(" << type->GetMemberTypeName(i) << ");\n";
+			ss_serialize << "    FIELD(" << type->GetMemberTypeName(i) << ");\n";
 
 			size = memberDesc.Offset + memberSize;
 		}
 
 		ss << "}; // size: " << size;
 
+		ss_keyvalue << "METATABLE_END(HLSL::" << desc.Name << ");\n\n";
+		ss_serialize << "SERIALIZETABLE_END(HLSL::" << desc.Name << ");\n\n";
+
 		of << ss.str() << "\n\n";
+		if (generateMeta) {
+			of_cpp << ss_keyvalue.str() << ss_serialize.str() << "\n";
+		}
 
 		pib.first->second = size;
 	}
@@ -311,51 +325,21 @@ int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& o
 	return 0;
 }
 
-int generateConstantBufferStruct(ID3D12ShaderReflectionConstantBuffer* cb, std::ostream& of, std::map<std::string, UINT>& generatedStructs) {
-	D3D12_SHADER_BUFFER_DESC desc;
-	HRESULT hr = cb->GetDesc(&desc);
-	CHECK_HR(ConstantBuffer / GetDesc);
+int generateConstantBufferStruct(ID3D12ShaderReflectionConstantBuffer* cb, std::ostream& of, std::ostream& of_cpp, bool generateMeta, std::map<std::string, UINT>& generatedStructs) {
+	D3D12_SHADER_BUFFER_DESC bufferDesc;
+	HRESULT hr = cb->GetDesc(&bufferDesc);
+	CHECK_HR(Reflect / ConstantBuffer / GetBufferDesc);
 
-	auto pib = generatedStructs.try_emplace(desc.Name);
-	if (pib.second) {
+	assert(bufferDesc.Variables == 1);
 
-		std::stringstream ss;
+	ID3D12ShaderReflectionType* type = cb->GetVariableByIndex(0)->GetType();
 
-		ss << "struct " << desc.Name << "{\n";
+	D3D12_SHADER_TYPE_DESC typeDesc;
+	hr = type->GetDesc(&typeDesc);
+	CHECK_HR(Reflect / ConstantBuffer / GetTypeDesc);
 
-		UINT currentSize = 0;
-
-		for (UINT i = 0; i < desc.Variables; ++i) {
-			ID3D12ShaderReflectionVariable* variable = cb->GetVariableByIndex(i);
-			D3D12_SHADER_VARIABLE_DESC varDesc;
-			hr = variable->GetDesc(&varDesc);
-			CHECK_HR(ConstantBuffer / Variable / GetDesc);
-
-			dummy(ss, (varDesc.StartOffset - currentSize) / 4);
-
-			UINT size = 0;
-
-			if (int result = writeType(variable->GetType(), varDesc.Name, size, ss, of, generatedStructs))
-				return result;
-
-			ss << "// offset: " << varDesc.StartOffset << ", size: " << size << "\n";
-
-			if (size != varDesc.Size) {
-				std::cerr << "Size mismatch: " << desc.Name << "::" << varDesc.Name << " " << size << " - " << varDesc.Size << std::endl;
-				//return -1;
-			}
-
-			currentSize = varDesc.StartOffset + varDesc.Size;
-		}
-
-		ss << "}; // size: " << currentSize;
-
-		of << ss.str() << "\n\n";
-
-		pib.first->second = currentSize;
-	}
-
-	return 0;
+	UINT size;
+	return generateStruct(type, size, of, of_cpp, generateMeta, generatedStructs);
 }
 
 int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, const DxcBuffer& sourceBuffer, std::vector<LPCWSTR> arguments, std::vector<std::wstring> includes, std::map<std::wstring, std::vector<std::wstring>>& profileEntrypoints) {
@@ -414,11 +398,22 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 		CHECK_HR(Reflect / GetDesc);
 
 		std::ofstream of{ converter.to_bytes(outFolder) + '/' + baseName + "_hlsl.h" };
+		std::ofstream of_cpp{ converter.to_bytes(outFolder) + '/' + baseName + "_hlsl.cpp" };
+
+		of_cpp << "#include \"" << baseName << "_hlsl.h\"\n\n";
+
+		of_cpp << R"(#include "Meta/keyvalue/metatable_impl.h"
+#include "Meta/serialize/serializetable_impl.h"
+
+)";
 
 		of << "#pragma once\n";
 
 		of << R"(
+	#include "Madgine/renderlib.h"
     #include "Madgine/render/shaderfileobject.h"
+	#include "Madgine/render/textureloader.h"
+	#include "Meta/math/matrix4.h"
 
 )";
 
@@ -454,10 +449,21 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 
 			std::vector<std::string> constantBufferBindings;
 
+			struct ResourceMember {
+				std::string mName;
+				std::string mType;
+			};
+
+			struct ResourceBlock {
+				std::string mName;
+				bool mIsSingleTexture;
+				std::vector<ResourceMember> mMembers;
+			};
+
+			std::vector<ResourceBlock> resourceBlocks;
+
 			for (UINT j = 0; j < functionDesc.ConstantBuffers; ++j) {
 				ID3D12ShaderReflectionConstantBuffer* cb = function->GetConstantBufferByIndex(j);
-				if (int result = generateConstantBufferStruct(cb, of, generatedStructs))
-					return result;
 
 				D3D12_SHADER_BUFFER_DESC desc;
 				hr = cb->GetDesc(&desc);
@@ -467,6 +473,9 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 				hr = function->GetResourceBindingDescByName(desc.Name, &bindDesc);
 				CHECK_HR(Reflect / ConstantBuffer / GetBinding);
 
+				if (int result = generateConstantBufferStruct(cb, of, of_cpp, bindDesc.Space > 1, generatedStructs))
+					return result;
+
 				if (bindDesc.Space == 0) {
 					if (constantBufferBindings.size() <= bindDesc.BindPoint)
 						constantBufferBindings.resize(bindDesc.BindPoint + 1);
@@ -474,8 +483,83 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 						std::cerr << "Bind Point " << bindDesc.BindPoint << " used for " << desc.Name << " and " << constantBufferBindings[bindDesc.BindPoint] << std::endl;
 						return -1;
 					}
-					constantBufferBindings[bindDesc.BindPoint] = desc.Name;
+
+					D3D12_SHADER_TYPE_DESC typeDesc;
+					hr = cb->GetVariableByIndex(0)->GetType()->GetDesc(&typeDesc);
+					CHECK_HR(Reflect / ConstantBuffer / GetTypeDesc);
+
+					constantBufferBindings[bindDesc.BindPoint] = typeDesc.Name;
 				}
+			}
+
+			for (UINT j = 0; j < functionDesc.BoundResources; ++j) {
+				D3D12_SHADER_INPUT_BIND_DESC bindDesc;
+				hr = function->GetResourceBindingDesc(j, &bindDesc);
+				CHECK_HR(Reflect / ResourceBinding / GetDesc);
+
+				if (bindDesc.Space < 2)
+					continue;
+
+				std::string type;
+
+				switch (bindDesc.Type) {
+				case D3D_SIT_TEXTURE:
+					type = "Engine::Render::TextureLoader::Handle";
+					break;
+				case D3D_SIT_STRUCTURED:
+				case D3D_SIT_CBUFFER: {
+					ID3D12ShaderReflectionConstantBuffer* buffer = function->GetConstantBufferByName(bindDesc.Name);
+					D3D12_SHADER_BUFFER_DESC bufferDesc;
+					hr = buffer->GetDesc(&bufferDesc);
+					CHECK_HR(Reflect / ResourceBinding / GetBufferDesc);
+
+					assert(bufferDesc.Variables == 1);
+					D3D12_SHADER_TYPE_DESC typeDesc;
+					buffer->GetVariableByIndex(0)->GetType()->GetDesc(&typeDesc);					
+					
+					type = typeDesc.Name;
+
+					break;
+				}
+				default:
+					std::cerr << "Unsupported resource type: " << bindDesc.Type << std::endl;
+				case D3D_SIT_SAMPLER:
+					continue;
+				}
+
+				if (resourceBlocks.size() <= bindDesc.Space) {
+					resourceBlocks.resize(bindDesc.Space + 1);
+					resourceBlocks[bindDesc.Space].mName = signature->name + "ResourceBlock" + std::to_string(bindDesc.Space);
+				}
+				ResourceBlock& block = resourceBlocks[bindDesc.Space];
+
+				block.mMembers.push_back(ResourceMember{ bindDesc.Name, type });
+				block.mIsSingleTexture = bindDesc.Type == D3D_SIT_TEXTURE && block.mMembers.size() == 1;
+			}
+
+			for (const ResourceBlock& block : resourceBlocks) {
+				if (block.mMembers.empty())
+					continue;
+				of << "struct " << block.mName << " {\n";
+				of_cpp << "METATABLE_BEGIN(HLSL::" << block.mName << ")\n";
+				for (const ResourceMember& member : block.mMembers) {
+					of << "    " << member.mType << " " << member.mName << ";\n";
+					of_cpp << "    MEMBER(" << member.mName << ")\n";
+				}
+				of_cpp << "METATABLE_END(HLSL::" << block.mName << ")\n\n";
+				if (block.mIsSingleTexture) {
+					of << "\n    Engine::Render::ResourceBlock";
+				}
+				else {
+					of << "\n    Engine::Render::UniqueResourceBlock";
+				}
+				of << " toResourceBlock(Engine::Render::RenderContext * context) const; \n }; \n\n";
+
+				of_cpp << "SERIALIZETABLE_BEGIN(HLSL::" << block.mName << ")\n";
+				for (const ResourceMember& member : block.mMembers) {
+					of_cpp << "    FIELD(" << member.mName << ")\n";
+				}
+				of_cpp << "SERIALIZETABLE_END(HLSL::" << block.mName << ")\n\n\n";
 			}
 
 			std::string suffix = signature->name.substr(signature->name.size() - 2);

@@ -102,6 +102,60 @@ int transpileSPIRV(const std::wstring& fileName, const std::wstring &outFile, st
     arguments.push_back(L"4");
 
     arguments.push_back(L"-fvk-bind-register");
+    arguments.push_back(L"b0");
+    arguments.push_back(L"0");
+    arguments.push_back(L"0");
+    arguments.push_back(L"1");
+
+    arguments.push_back(L"-fvk-bind-register");
+    arguments.push_back(L"b0");
+    arguments.push_back(L"1");
+    arguments.push_back(L"0");
+    arguments.push_back(L"2");
+
+    arguments.push_back(L"-fvk-bind-register");
+    arguments.push_back(L"b1");
+    arguments.push_back(L"1");
+    arguments.push_back(L"1");
+    arguments.push_back(L"2");
+
+    arguments.push_back(L"-fvk-bind-register");
+    arguments.push_back(L"b0");
+    arguments.push_back(L"2");
+    arguments.push_back(L"0");
+    arguments.push_back(L"3");
+
+    arguments.push_back(L"-fvk-bind-register");
+    arguments.push_back(L"b1");
+    arguments.push_back(L"2");
+    arguments.push_back(L"1");
+    arguments.push_back(L"3");
+
+    arguments.push_back(L"-fvk-bind-register");
+    arguments.push_back(L"b2");
+    arguments.push_back(L"2");
+    arguments.push_back(L"2");
+    arguments.push_back(L"3");
+
+    arguments.push_back(L"-fvk-bind-register");
+    arguments.push_back(L"b0");
+    arguments.push_back(L"3");
+    arguments.push_back(L"0");
+    arguments.push_back(L"4");
+
+    arguments.push_back(L"-fvk-bind-register");
+    arguments.push_back(L"b1");
+    arguments.push_back(L"3");
+    arguments.push_back(L"1");
+    arguments.push_back(L"4");
+
+    arguments.push_back(L"-fvk-bind-register");
+    arguments.push_back(L"b2");
+    arguments.push_back(L"3");
+    arguments.push_back(L"2");
+    arguments.push_back(L"4");
+
+    arguments.push_back(L"-fvk-bind-register");
     arguments.push_back(L"s0");
     arguments.push_back(L"0");
     arguments.push_back(L"0");
