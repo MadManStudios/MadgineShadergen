@@ -266,7 +266,7 @@ int writeType(ID3D12ShaderReflectionType* type, const char* name, UINT& size, st
 	return 0;
 }
 
-int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& of, std::ostream &of_cpp, bool generateMeta, std::map<std::string, UINT>& generatedStructs) {
+int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& of, std::ostream& of_cpp, bool generateMeta, std::map<std::string, UINT>& generatedStructs) {
 	D3D12_SHADER_TYPE_DESC desc;
 	HRESULT hr = type->GetDesc(&desc);
 	CHECK_HR(Type / GetDesc);
@@ -306,6 +306,10 @@ int generateStruct(ID3D12ShaderReflectionType* type, UINT& size, std::ostream& o
 
 			size = memberDesc.Offset + memberSize;
 		}
+
+		UINT alignedSize = (((size - 1) / 16) + 1) * 16;
+		dummy(ss, (alignedSize - size) / 4);
+		size = alignedSize;
 
 		ss << "}; // size: " << size;
 
@@ -412,8 +416,10 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 		of << R"(
 	#include "Madgine/renderlib.h"
     #include "Madgine/render/shaderfileobject.h"
-	#include "Madgine/render/textureloader.h"
 	#include "Meta/math/matrix4.h"
+	#include "Madgine/imageloader/imageloader.h"
+	#include "Madgine/render/rendercontext.h"
+	#include "Madgine/render/texture.h"
 
 )";
 
@@ -452,6 +458,7 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 			struct ResourceMember {
 				std::string mName;
 				std::string mType;
+				bool isStructured;
 			};
 
 			struct ResourceBlock {
@@ -501,12 +508,28 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 					continue;
 
 				std::string type;
+				bool isStructured = false;
 
 				switch (bindDesc.Type) {
 				case D3D_SIT_TEXTURE:
-					type = "Engine::Render::TextureLoader::Handle";
+					type = "Engine::Resources::ImageLoader::Handle";
 					break;
 				case D3D_SIT_STRUCTURED:
+				{
+					ID3D12ShaderReflectionConstantBuffer* buffer = function->GetConstantBufferByName(bindDesc.Name);
+					D3D12_SHADER_BUFFER_DESC bufferDesc;
+					hr = buffer->GetDesc(&bufferDesc);
+					CHECK_HR(Reflect / ResourceBinding / GetBufferDesc);
+
+					assert(bufferDesc.Variables == 1);
+					D3D12_SHADER_TYPE_DESC typeDesc;
+					buffer->GetVariableByIndex(0)->GetType()->GetDesc(&typeDesc);
+
+					type = typeDesc.Name;
+					isStructured = true;
+
+					break;
+				}
 				case D3D_SIT_CBUFFER: {
 					ID3D12ShaderReflectionConstantBuffer* buffer = function->GetConstantBufferByName(bindDesc.Name);
 					D3D12_SHADER_BUFFER_DESC bufferDesc;
@@ -515,8 +538,8 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 
 					assert(bufferDesc.Variables == 1);
 					D3D12_SHADER_TYPE_DESC typeDesc;
-					buffer->GetVariableByIndex(0)->GetType()->GetDesc(&typeDesc);					
-					
+					buffer->GetVariableByIndex(0)->GetType()->GetDesc(&typeDesc);
+
 					type = typeDesc.Name;
 
 					break;
@@ -527,39 +550,114 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 					continue;
 				}
 
-				if (resourceBlocks.size() <= bindDesc.Space) {
-					resourceBlocks.resize(bindDesc.Space + 1);
-					resourceBlocks[bindDesc.Space].mName = signature->name + "ResourceBlock" + std::to_string(bindDesc.Space);
+				if (resourceBlocks.size() <= bindDesc.Space - 2) {
+					resourceBlocks.resize(bindDesc.Space - 1);
+					resourceBlocks[bindDesc.Space - 2].mName = signature->name + "ResourceBlock" + std::to_string(bindDesc.Space - 2);
 				}
-				ResourceBlock& block = resourceBlocks[bindDesc.Space];
+				ResourceBlock& block = resourceBlocks[bindDesc.Space - 2];
 
-				block.mMembers.push_back(ResourceMember{ bindDesc.Name, type });
+				if (block.mMembers.size() <= bindDesc.BindPoint) {
+					block.mMembers.resize(bindDesc.BindPoint + 1);
+				}
+
+				block.mMembers[bindDesc.BindPoint] = ResourceMember{ bindDesc.Name, type, isStructured };
 				block.mIsSingleTexture = bindDesc.Type == D3D_SIT_TEXTURE && block.mMembers.size() == 1;
 			}
 
+			std::stringstream resourceBlockSignature;
+			bool firstResourceBlock = true;
 			for (const ResourceBlock& block : resourceBlocks) {
-				if (block.mMembers.empty())
-					continue;
-				of << "struct " << block.mName << " {\n";
-				of_cpp << "METATABLE_BEGIN(HLSL::" << block.mName << ")\n";
-				for (const ResourceMember& member : block.mMembers) {
-					of << "    " << member.mType << " " << member.mName << ";\n";
-					of_cpp << "    MEMBER(" << member.mName << ")\n";
-				}
-				of_cpp << "METATABLE_END(HLSL::" << block.mName << ")\n\n";
-				if (block.mIsSingleTexture) {
-					of << "\n    Engine::Render::ResourceBlock";
-				}
-				else {
-					of << "\n    Engine::Render::UniqueResourceBlock";
-				}
-				of << " toResourceBlock(Engine::Render::RenderContext * context) const; \n }; \n\n";
 
-				of_cpp << "SERIALIZETABLE_BEGIN(HLSL::" << block.mName << ")\n";
-				for (const ResourceMember& member : block.mMembers) {
-					of_cpp << "    FIELD(" << member.mName << ")\n";
+				if (firstResourceBlock)
+					firstResourceBlock = false;
+				else
+					resourceBlockSignature << ", ";
+				resourceBlockSignature << "{";
+
+				if (!block.mMembers.empty()) {
+					of << "struct " << block.mName << " {\n";
+					of_cpp << "METATABLE_BEGIN(HLSL::" << block.mName << ")\n";
+					for (const ResourceMember& member : block.mMembers) {
+						of << "    ";
+						if (member.isStructured)
+							of << "std::vector<";
+						of << member.mType;
+						if (member.isStructured)
+							of << ">";
+						of << " " << member.mName << ";\n";
+						of_cpp << "    MEMBER(" << member.mName << ")\n";
+					}
+					of_cpp << "METATABLE_END(HLSL::" << block.mName << ")\n\n";
+
+
+					of_cpp << "SERIALIZETABLE_BEGIN(HLSL::" << block.mName << ")\n";
+					for (const ResourceMember& member : block.mMembers) {
+						of_cpp << "    FIELD(" << member.mName << ")\n";
+					}
+					of_cpp << "SERIALIZETABLE_END(HLSL::" << block.mName << ")\n\n\n";
+
+					of_cpp << "namespace HLSL{\n";
+
+					/*if (block.mIsSingleTexture) {
+						of << "\n    Engine::Render::ResourceBlock";
+						of_cpp << "\nEngine::Render::ResourceBlock";
+					}
+					else*/ {
+						of << "\n    Engine::Render::UniqueResourceBlock";
+						of_cpp << "\nEngine::Render::UniqueResourceBlock";
+					}
+					of << " toResourceBlock(Engine::Render::RenderContext * context) const; \n }; \n\n";
+					of_cpp << " " << block.mName << "::toResourceBlock(Engine::Render::RenderContext * context) const {\n";
+
+					std::stringstream returnArguments;
+					bool firstArgument = true;
+					size_t i = 0;
+					for (const ResourceMember& member : block.mMembers) {
+						std::string varName;
+						std::string type;
+						if (member.mType == "Engine::Resources::ImageLoader::Handle") {
+							of_cpp << "    Engine::Render::TexturePtr tex" << i << ";\n";
+							of_cpp << "    if (" << member.mName << "){\n";
+							of_cpp << "        assert(" << member.mName << ".available());\n";
+							of_cpp << "        tex" << i << " = context->createTexture(Engine::Render::TextureType_2D, Engine::Render::TextureFormat::FORMAT_RGBA8_SRGB, " << member.mName << "->mSize, " << member.mName << "->mBuffer); \n";
+							of_cpp << "    }\n";
+							varName = "tex" + std::to_string(i);
+							type = "Texture";
+						}
+						else if(member.isStructured){
+							of_cpp << "    Engine::Render::GPUPtr<" << member.mType << "[]> buf" << i << " = context->allocateBuffer<" << member.mType << "[]>(" << member.mName << ".size());\n";
+							of_cpp << "    {\n";
+							of_cpp << "        auto mapped = context->mapBuffer(buf" << i << ");\n";
+							of_cpp << "        std::ranges::copy(" << member.mName << ", mapped.begin());\n";
+							of_cpp << "    }\n";
+							varName = "buf" + std::to_string(i);
+							type = "StructuredBuffer";
+						}
+						else {
+							of_cpp << "    Engine::Render::GPUPtr<" << member.mType << "> buf" << i << " = context->allocateBuffer<" << member.mType << ">();\n";
+							of_cpp << "    {\n";
+							of_cpp << "        auto mapped = context->mapBuffer(buf" << i << ");\n";
+							of_cpp << "        *mapped = " << member.mName << ";\n";
+							of_cpp << "    }\n";
+							varName = "buf" + std::to_string(i);
+							type = "ConstantBuffer";
+						}
+						if (firstArgument)
+							firstArgument = false;
+						else {
+							returnArguments << ", ";
+							resourceBlockSignature << ", ";
+						}
+						returnArguments << "std::move(" << varName << ")";
+						resourceBlockSignature << "Engine::Render::ResourceBlockType::" << type;
+						++i;
+					}
+
+					of_cpp << "    return context->createResourceBlock({" << returnArguments.str() << "});\n";
+					of_cpp << "}\n\n";
+					of_cpp << "}\n\n";
 				}
-				of_cpp << "SERIALIZETABLE_END(HLSL::" << block.mName << ")\n\n\n";
+				resourceBlockSignature << "}";
 			}
 
 			std::string suffix = signature->name.substr(signature->name.size() - 2);
@@ -588,7 +686,7 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 					of << ", " << binding;
 				}
 			}
-			of << "> " << signature->name << " { file_" << baseName << ", \"" << signature->name << "\", {} };\n";
+			of << "> " << signature->name << " { file_" << baseName << ", \"" << signature->name << "\", {}, {" << resourceBlockSignature.str() << "} };\n";
 		}
 
 		of << "}\n";

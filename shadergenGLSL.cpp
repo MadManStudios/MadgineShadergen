@@ -22,106 +22,114 @@
 
 #include "releaseptr.h"
 
-static std::map<std::string, uint32_t> sSemanticLocationMappings {
-    { "POSITION0", 0 },
-    { "POSITION1", 1 },
-    { "POSITION2", 2 },
-    { "NORMAL", 3 },
-    { "COLOR", 4 },
-    { "TEXCOORD", 5 },
-    { "BONEINDICES", 6 },
-    { "WEIGHTS", 7 },
-    { "INSTANCEDATA", 8 },
-    { "INSTANCEDATA1", std::numeric_limits<uint32_t>::max() },
-    { "INSTANCEDATA2", std::numeric_limits<uint32_t>::max() },
-    { "INSTANCEDATA3", std::numeric_limits<uint32_t>::max() },
-    { "INSTANCEDATA4", std::numeric_limits<uint32_t>::max() },
-    { "INSTANCEDATA5", std::numeric_limits<uint32_t>::max() },
-    { "INSTANCEDATA6", std::numeric_limits<uint32_t>::max() }
+static std::map<std::string, uint32_t> sSemanticLocationMappings{
+	{ "POSITION0", 0 },
+	{ "POSITION1", 1 },
+	{ "POSITION2", 2 },
+	{ "NORMAL", 3 },
+	{ "COLOR", 4 },
+	{ "TEXCOORD", 5 },
+	{ "BONEINDICES", 6 },
+	{ "WEIGHTS", 7 },
+	{ "INSTANCEDATA", 8 },
+	{ "INSTANCEDATA1", std::numeric_limits<uint32_t>::max() },
+	{ "INSTANCEDATA2", std::numeric_limits<uint32_t>::max() },
+	{ "INSTANCEDATA3", std::numeric_limits<uint32_t>::max() },
+	{ "INSTANCEDATA4", std::numeric_limits<uint32_t>::max() },
+	{ "INSTANCEDATA5", std::numeric_limits<uint32_t>::max() },
+	{ "INSTANCEDATA6", std::numeric_limits<uint32_t>::max() }
 };
 
-int transpileGLSL(const std::wstring& fileName, const std::wstring & outFile, IDxcResult *result, const std::wstring& profile)
+int transpileGLSL(const std::wstring& fileName, const std::wstring& outFile, IDxcResult* result, const std::wstring& profile)
 {
-    std::cout << "GLSL... ";
+	std::cout << "GLSL... ";
 
-    std::string shaderCode;
+	std::string shaderCode;
 
-    try {
+	try {
 
-        ReleasePtr<IDxcBlob> pSpirv;
-        HRESULT hr = result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&pSpirv), nullptr);
-        CHECK_HR(GetOutput / Object);
+		ReleasePtr<IDxcBlob> pSpirv;
+		HRESULT hr = result->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(&pSpirv), nullptr);
+		CHECK_HR(GetOutput / Object);
 
-        spirv_cross::CompilerGLSL glsl { (uint32_t *)pSpirv->GetBufferPointer(), pSpirv->GetBufferSize() / 4 };
-        spirv_cross::CompilerGLSL::Options options {};
-        options.relax_nan_checks = true;
-        options.vertex.support_nonzero_base_instance = false;
-        glsl.set_common_options(options);
+		spirv_cross::CompilerGLSL glsl{ (uint32_t*)pSpirv->GetBufferPointer(), pSpirv->GetBufferSize() / 4 };
+		spirv_cross::CompilerGLSL::Options options{};
+		options.relax_nan_checks = true;
+		options.vertex.support_nonzero_base_instance = false;
+		glsl.set_common_options(options);
 
-        spirv_cross::ShaderResources resources = glsl.get_shader_resources();
+		spirv_cross::ShaderResources resources = glsl.get_shader_resources();
 
-        std::map<spirv_cross::ID, std::pair<std::string, uint32_t>> imageData;
+		std::map<spirv_cross::ID, std::pair<std::string, uint32_t>> imageData;
 
-        for (auto &resource : resources.separate_images) {
-            imageData[resource.id] = { glsl.get_name(resource.id), 4 * (glsl.get_decoration(resource.id, spv::DecorationDescriptorSet) - 1) + glsl.get_decoration(resource.id, spv::DecorationBinding) };
-        }
+		for (auto& resource : resources.separate_images) {
+			imageData[resource.id] = { glsl.get_name(resource.id), 4 * glsl.get_decoration(resource.id, spv::DecorationDescriptorSet) + glsl.get_decoration(resource.id, spv::DecorationBinding) };
+		}
 
-        glsl.build_dummy_sampler_for_combined_images();
+		glsl.build_dummy_sampler_for_combined_images();
 
-        glsl.build_combined_image_samplers();
+		glsl.build_combined_image_samplers();
 
-        auto &mappings = glsl.get_combined_image_samplers();
-        std::map<spirv_cross::ID, spirv_cross::ID> map;
-        for (auto &mapping : mappings) {
-            map[mapping.combined_id] = mapping.image_id;
-        }
+		auto& mappings = glsl.get_combined_image_samplers();
+		std::map<spirv_cross::ID, spirv_cross::ID> map;
+		for (auto& mapping : mappings) {
+			map[mapping.combined_id] = mapping.image_id;
+		}
 
-        resources = glsl.get_shader_resources();
+		resources = glsl.get_shader_resources();
 
-        for (auto &resource : resources.sampled_images) {
-            auto &data = imageData[map[resource.id]];
-            glsl.set_name(resource.id, data.first);
-            glsl.set_decoration(resource.id, spv::DecorationBinding, data.second);
-        }
+		for (auto& resource : resources.sampled_images) {
+			auto& data = imageData[map[resource.id]];
+			glsl.set_name(resource.id, data.first);
+			glsl.set_decoration(resource.id, spv::DecorationBinding, data.second);
+		}
 
-        for (auto &resource : resources.storage_buffers) {            
-            uint32_t set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-            if (set > 0)
-                glsl.set_decoration(resource.id, spv::DecorationBinding, 4 + (set - 1) + glsl.get_decoration(resource.id, spv::DecorationBinding));
-        }
+		for (auto& resource : resources.storage_buffers) {
+			uint32_t set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+			if (set > 0)
+				glsl.set_decoration(resource.id, spv::DecorationBinding, 4 * set + glsl.get_decoration(resource.id, spv::DecorationBinding));
+		}
 
-        for (const spirv_cross::VariableID &id : glsl.get_active_interface_variables()) {
-            if (glsl.get_storage_class(id) == spv::StorageClassInput && glsl.get_execution_model() == spv::ExecutionModelVertex) {
-                std::string name = glsl.get_name(id);
-                std::string semantic = name.substr(name.rfind('.') + 1);
-                auto it = sSemanticLocationMappings.find(semantic);
-                if (it != sSemanticLocationMappings.end()) {
-                    uint32_t location = it->second;
-                    if (location != std::numeric_limits<uint32_t>::max())
-                        glsl.set_decoration(id, spv::DecorationLocation, location);
-                } else {
-                    std::wcerr << fileName;
-                    std::cerr << "(1,1): warning : Unsupported semantic " << semantic << " used for " << name << std::endl;
-                }
-            }
-        }
+		for (auto& resource : resources.uniform_buffers) {
+			uint32_t set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+			if (set > 0)
+				glsl.set_decoration(resource.id, spv::DecorationBinding, 4 * set + glsl.get_decoration(resource.id, spv::DecorationBinding));
+		}
 
-        shaderCode = glsl.compile();
-    } catch (spirv_cross::CompilerError &error) {
-        std::cout << std::endl;
-        std::wcerr << fileName;
-        std::cerr << "(1,1): error: " << error.what()
-                  << "\n";
-        return -1;
-    }
+		for (const spirv_cross::VariableID& id : glsl.get_active_interface_variables()) {
+			if (glsl.get_storage_class(id) == spv::StorageClassInput && glsl.get_execution_model() == spv::ExecutionModelVertex) {
+				std::string name = glsl.get_name(id);
+				std::string semantic = name.substr(name.rfind('.') + 1);
+				auto it = sSemanticLocationMappings.find(semantic);
+				if (it != sSemanticLocationMappings.end()) {
+					uint32_t location = it->second;
+					if (location != std::numeric_limits<uint32_t>::max())
+						glsl.set_decoration(id, spv::DecorationLocation, location);
+				}
+				else {
+					std::wcerr << fileName;
+					std::cerr << "(1,1): warning : Unsupported semantic " << semantic << " used for " << name << std::endl;
+				}
+			}
+		}
 
-    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+		shaderCode = glsl.compile();
+	}
+	catch (spirv_cross::CompilerError& error) {
+		std::cout << std::endl;
+		std::wcerr << fileName;
+		std::cerr << "(1,1): error: " << error.what()
+			<< "\n";
+		return -1;
+	}
 
-    std::ofstream of { converter.to_bytes( outFile ) };
+	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
 
-    of << shaderCode << std::endl;
+	std::ofstream of{ converter.to_bytes(outFile) };
 
-    std::cout << "Success!" << std::endl;
+	of << shaderCode << std::endl;
 
-    return 0;
+	std::cout << "Success!" << std::endl;
+
+	return 0;
 }

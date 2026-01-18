@@ -64,7 +64,7 @@ int transpileGLSLES(const std::wstring& fileName, const std::wstring & outFile, 
         std::map<spirv_cross::ID, std::pair<std::string, uint32_t>> imageData;
 
         for (auto &resource : resources.separate_images) {
-            imageData[resource.id] = { glsl.get_name(resource.id), 4 * (glsl.get_decoration(resource.id, spv::DecorationDescriptorSet) - 1) + glsl.get_decoration(resource.id, spv::DecorationBinding) };
+            imageData[resource.id] = { glsl.get_name(resource.id), 4 * glsl.get_decoration(resource.id, spv::DecorationDescriptorSet) + glsl.get_decoration(resource.id, spv::DecorationBinding) };
         }
 
         glsl.build_dummy_sampler_for_combined_images();
@@ -90,13 +90,14 @@ int transpileGLSLES(const std::wstring& fileName, const std::wstring & outFile, 
         glsl.add_header_line("#define std430 std140");
         for (auto &resource : resources.storage_buffers) {
             uint32_t set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
-            glsl.set_name(resource.base_type_id, "buffer" + std::to_string(4 + (set - 1) + glsl.get_decoration(resource.id, spv::DecorationBinding)));
+            glsl.set_name(resource.base_type_id, "buffer" + std::to_string(4 * set + glsl.get_decoration(resource.id, spv::DecorationBinding)));
         }
 
         for (auto& resource : resources.uniform_buffers) {            
-            //glsl.set_name(resource.id, "buffer" + std::to_string(glsl.get_decoration(resource.id, spv::DecorationBinding)));
-            glsl.set_name(resource.base_type_id, "buffer" + std::to_string(glsl.get_decoration(resource.id, spv::DecorationBinding)));
+            uint32_t set = glsl.get_decoration(resource.id, spv::DecorationDescriptorSet);
+            glsl.set_name(resource.base_type_id, "buffer" + std::to_string(4 * set + glsl.get_decoration(resource.id, spv::DecorationBinding)));
         }
+
 
         for (const spirv_cross::VariableID &id : glsl.get_active_interface_variables()) {
             if (glsl.get_storage_class(id) == spv::StorageClassInput && glsl.get_execution_model() == spv::ExecutionModelVertex) {
