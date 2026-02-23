@@ -86,11 +86,11 @@ jobs:
             if (test-path ${{ matrix.os }}.zip) {
               remove-item ${{ matrix.os }}.zip
             }
-            7z a ${{ matrix.os }}.zip ShaderGen.exe dxcompiler.dll dxcompiler.lib
+            7z a ${{ matrix.os }}.zip ShaderGen.exe dxcompiler.dll dxcompiler.lib DXCompiler-LICENSE.txt ShaderGen-LICENSE.txt
           }
           else {
             rm -rf ${{ matrix.os }}.zip
-            zip -r ${{ matrix.os }}.zip . -i ShaderGen *dxcompiler.*
+            zip -r ${{ matrix.os }}.zip . -i ShaderGen *dxcompiler.* DXCompiler-LICENSE.txt ShaderGen-LICENSE.txt
           }
          
 

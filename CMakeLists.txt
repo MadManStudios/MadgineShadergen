@@ -81,3 +81,15 @@ if (WIN32)
 	add_custom_command(TARGET ShaderGen POST_BUILD
 						COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_IMPORT_FILE:dxcompiler> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
+
+file(COPY_FILE ${directxshadercompiler_SOURCE_DIR}/LICENSE.TXT ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/DXCompiler-LICENSE.txt)
+
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt shadergen_license)
+
+file(READ ${CMAKE_CURRENT_SOURCE_DIR}/ext/SPIRV-Cross/LICENSE spirv_cross_license)
+
+file(WRITE ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/ShaderGen-LICENSE.txt "${shadergen_license}
+
+############### SPIRV-Cross License ############
+
+${spirv_cross_license}")
