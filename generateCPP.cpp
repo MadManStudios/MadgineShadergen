@@ -237,7 +237,7 @@ int writeType(ID3D12ShaderReflectionType* type, const char* name, UINT& size, st
 			return result;
 		break;
 	case D3D_SVC_VECTOR:
-		typeName = "Engine::Vector" + std::to_string(typeDesc.Columns);
+		typeName = "Engine::Math::Vector" + std::to_string(typeDesc.Columns);
 		if (typeDesc.Type == D3D_SVT_INT)
 			typeName += "i";
 		size = 4 * typeDesc.Columns;
@@ -245,7 +245,7 @@ int writeType(ID3D12ShaderReflectionType* type, const char* name, UINT& size, st
 	case D3D_SVC_MATRIX_ROWS:
 	case D3D_SVC_MATRIX_COLUMNS:
 		assert(typeDesc.Columns == typeDesc.Rows);
-		typeName = "Engine::Matrix" + std::to_string(typeDesc.Columns);
+		typeName = "Engine::Math::Matrix" + std::to_string(typeDesc.Columns);
 		size = 4 * typeDesc.Columns * typeDesc.Rows;
 		break;
 	default:
