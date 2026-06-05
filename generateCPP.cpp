@@ -406,7 +406,7 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 
 		of_cpp << "#include \"" << baseName << "_hlsl.h\"\n\n";
 
-		of_cpp << R"(#include "Meta/keyvalue/metatable_impl.h"
+		of_cpp << R"(#include "Meta/reflect/metatable_impl.h"
 #include "Meta/serialize/serializetable_impl.h"
 
 )";
