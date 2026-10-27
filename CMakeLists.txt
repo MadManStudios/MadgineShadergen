@@ -54,7 +54,7 @@ set (HLSL_EMBED_VERSION ON CACHE BOOL "")
 
 FetchContent_Declare(DirectXShaderCompiler
 	GIT_REPOSITORY https://github.com/microsoft/DirectXShaderCompiler.git
-	GIT_TAG v1.8.2505.1	
+	GIT_TAG v1.9.2609
 	)
 
 FetchContent_MakeAvailable(DirectXShaderCompiler)
