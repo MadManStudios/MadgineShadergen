@@ -409,6 +409,8 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 		of_cpp << R"(#include "Meta/reflect/metatable_impl.h"
 #include "Meta/serialize/serializetable_impl.h"
 
+#include "Modules/threading/taskqueue.h"
+
 )";
 
 		of << "#pragma once\n";
@@ -603,13 +605,14 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 						of_cpp << "\nEngine::Render::ResourceBlock";
 					}
 					else*/ {
-						of << "\n    Engine::Render::UniqueResourceBlock";
-						of_cpp << "\nEngine::Render::UniqueResourceBlock";
+						of << "\n    std::pair<Engine::Render::UniqueResourceBlock, Engine::Threading::TaskFuture<bool>>";
+						of_cpp << "\nstd::pair<Engine::Render::UniqueResourceBlock, Engine::Threading::TaskFuture<bool>>";
 					}
 					of << " toResourceBlock(Engine::Render::RenderContext * context) const; \n }; \n\n";
 					of_cpp << " " << block.mName << "::toResourceBlock(Engine::Render::RenderContext * context) const {\n";
 
 					std::stringstream returnArguments;
+					std::stringstream renderThreadInstructions;
 					bool firstArgument = true;
 					size_t i = 0;
 					for (const ResourceMember& member : block.mMembers) {
@@ -626,19 +629,17 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 						}
 						else if(member.isStructured){
 							of_cpp << "    Engine::Render::GPUPtr<" << member.mType << "[]> buf" << i << " = context->allocateBuffer<" << member.mType << "[]>(" << member.mName << ".size());\n";
-							of_cpp << "    {\n";
-							of_cpp << "        auto mapped = context->mapBuffer(buf" << i << ");\n";
-							of_cpp << "        std::ranges::copy(" << member.mName << ", mapped.begin());\n";
-							of_cpp << "    }\n";
+							renderThreadInstructions << "    context->renderQueue()->queueTask(context->mapBuffer(buf" << i << ", [&](auto &mapped) {\n";
+							renderThreadInstructions << "        std::ranges::copy(data." << member.mName << ", mapped);\n";
+							renderThreadInstructions << "    }));\n";
 							varName = "buf" + std::to_string(i);
 							type = "StructuredBuffer";
 						}
 						else {
 							of_cpp << "    Engine::Render::GPUPtr<" << member.mType << "> buf" << i << " = context->allocateBuffer<" << member.mType << ">();\n";
-							of_cpp << "    {\n";
-							of_cpp << "        auto mapped = context->mapBuffer(buf" << i << ");\n";
-							of_cpp << "        *mapped = " << member.mName << ";\n";
-							of_cpp << "    }\n";
+							renderThreadInstructions << "    context->renderQueue()->queueTask(context->mapBuffer(buf" << i << ", [&](auto &mapped) {\n";							
+							renderThreadInstructions << "        mapped = data." << member.mName << ";\n";
+							renderThreadInstructions << "    }));\n";
 							varName = "buf" + std::to_string(i);
 							type = "ConstantBuffer";
 						}
@@ -653,7 +654,16 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 						++i;
 					}
 
-					of_cpp << "    return context->createResourceBlock({" << returnArguments.str() << "});\n";
+					of_cpp << "    Engine::Threading::TaskFuture<bool> state = context->renderQueue()->queueTask(Engine::Threading::make_task([=](" << block.mName << " data)->Engine::Threading::Task<bool> {\n";
+					of_cpp << "        std::vector<Engine::Threading::TaskFuture<bool>> futures;\n";
+					of_cpp << renderThreadInstructions.str();
+					of_cpp << "\n\n        for (Engine::Threading::TaskFuture<bool> &fut : futures)\n";
+					of_cpp << "            if (!co_await fut)\n";
+					of_cpp << "                co_return false;\n";
+					of_cpp << "        co_return true;\n";
+					of_cpp << "    }, " << block.mName << "{*this}));\n\n";
+
+					of_cpp << "    return { context->createResourceBlock({" << returnArguments.str() << "}), std::move(state) };\n";
 					of_cpp << "}\n\n";
 					of_cpp << "}\n\n";
 				}
