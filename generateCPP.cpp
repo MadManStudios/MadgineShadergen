@@ -629,17 +629,17 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 						}
 						else if(member.isStructured){
 							of_cpp << "    Engine::Render::GPUPtr<" << member.mType << "[]> buf" << i << " = context->allocateBuffer<" << member.mType << "[]>(" << member.mName << ".size());\n";
-							renderThreadInstructions << "    context->renderQueue()->queueTask(context->mapBuffer(buf" << i << ", [&](auto &mapped) {\n";
-							renderThreadInstructions << "        std::ranges::copy(data." << member.mName << ", mapped);\n";
-							renderThreadInstructions << "    }));\n";
+							renderThreadInstructions << "        context->renderQueue()->queueTask(context->updateBuffer(buf" << i << ", [&](auto &mapped) {\n";
+							renderThreadInstructions << "            std::ranges::copy(data." << member.mName << ", mapped);\n";
+							renderThreadInstructions << "        }));\n";
 							varName = "buf" + std::to_string(i);
 							type = "StructuredBuffer";
 						}
 						else {
 							of_cpp << "    Engine::Render::GPUPtr<" << member.mType << "> buf" << i << " = context->allocateBuffer<" << member.mType << ">();\n";
-							renderThreadInstructions << "    context->renderQueue()->queueTask(context->mapBuffer(buf" << i << ", [&](auto &mapped) {\n";							
-							renderThreadInstructions << "        mapped = data." << member.mName << ";\n";
-							renderThreadInstructions << "    }));\n";
+							renderThreadInstructions << "        context->renderQueue()->queueTask(context->updateBuffer(buf" << i << ", [&](auto &mapped) {\n";							
+							renderThreadInstructions << "            mapped = data." << member.mName << ";\n";
+							renderThreadInstructions << "        }));\n";
 							varName = "buf" + std::to_string(i);
 							type = "ConstantBuffer";
 						}
