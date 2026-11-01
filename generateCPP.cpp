@@ -629,7 +629,7 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 						}
 						else if(member.isStructured){
 							of_cpp << "    Engine::Render::GPUPtr<" << member.mType << "[]> buf" << i << " = context->allocateBuffer<" << member.mType << "[]>(" << member.mName << ".size());\n";
-							renderThreadInstructions << "        context->renderQueue()->queueTask(context->updateBuffer(buf" << i << ", [&](auto &mapped) {\n";
+							renderThreadInstructions << "        context->renderQueue().queueTask(context->updateBuffer(buf" << i << ", [&](auto &mapped) {\n";
 							renderThreadInstructions << "            std::ranges::copy(data." << member.mName << ", mapped);\n";
 							renderThreadInstructions << "        }));\n";
 							varName = "buf" + std::to_string(i);
@@ -637,7 +637,7 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 						}
 						else {
 							of_cpp << "    Engine::Render::GPUPtr<" << member.mType << "> buf" << i << " = context->allocateBuffer<" << member.mType << ">();\n";
-							renderThreadInstructions << "        context->renderQueue()->queueTask(context->updateBuffer(buf" << i << ", [&](auto &mapped) {\n";							
+							renderThreadInstructions << "        context->renderQueue().queueTask(context->updateBuffer(buf" << i << ", [&](auto &mapped) {\n";							
 							renderThreadInstructions << "            mapped = data." << member.mName << ";\n";
 							renderThreadInstructions << "        }));\n";
 							varName = "buf" + std::to_string(i);
@@ -654,7 +654,7 @@ int generateCPP(const std::wstring& _filePath, const std::wstring& outFolder, co
 						++i;
 					}
 
-					of_cpp << "    Engine::Threading::TaskFuture<bool> state = context->renderQueue()->queueTask(Engine::Threading::make_task([=](" << block.mName << " data)->Engine::Threading::Task<bool> {\n";
+					of_cpp << "    Engine::Threading::TaskFuture<bool> state = context->renderQueue().queueTask(Engine::Threading::make_task([=](" << block.mName << " data)->Engine::Threading::Task<bool> {\n";
 					of_cpp << "        std::vector<Engine::Threading::TaskFuture<bool>> futures;\n";
 					of_cpp << renderThreadInstructions.str();
 					of_cpp << "\n\n        for (Engine::Threading::TaskFuture<bool> &fut : futures)\n";
